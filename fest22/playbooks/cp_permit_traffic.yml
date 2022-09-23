@@ -3,8 +3,8 @@
   hosts: checkpoint
 
   vars:
-    source_ip: "{{ hostvars['attacker']['private_ip'] }}"
-    destination_ip: "{{ hostvars['windows-ad']['private_ip'] }}"
+    source_ip: "{{ hostvars['attacker']['private_ip2'] }}"
+    destination_ip: "{{ hostvars['windows-ad']['private_ip2'] }}"
 
   tasks:
     - name: Create source IP host object
