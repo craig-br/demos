@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create source IP host object
-      checkpoint.mgmt.checkpoint_host:
+      check_point.mgmt.checkpoint_host:
         name: "asa-{{ source_ip }}"
         ip_address: "{{ source_ip }}"
 
@@ -18,7 +18,7 @@
         ip_address: "{{ destination_ip }}"
 
     - name: Create access rule to allow access from source to destination
-      checkpoint.mgmt.checkpoint_access_rule:
+      check_point.mgmt.checkpoint_access_rule:
         auto_install_policy: yes
         auto_publish_session: yes
         layer: Network
@@ -29,7 +29,7 @@
         action: accept
 
     - name: Install policy
-      checkpoint.mgmt.cp_mgmt_install_policy:
+      check_point.mgmt.cp_mgmt_install_policy:
         policy_package: standard
         install_on_all_cluster_members_or_fail: yes
       failed_when: false
