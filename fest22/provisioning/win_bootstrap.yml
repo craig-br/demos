@@ -1,0 +1,36 @@
+---
+- name: Bootstrap Windows
+  hosts: adservers
+  gather_facts: false
+
+  tasks:
+  - name: Add AD accounts
+    community.windows.win_domain_user:
+      name: harry
+      firstname: Harry
+      password: "{{ win_user_password }}"
+      state: present
+      groups:
+        - "Domain Users"
+        - "Remote Desktop Users"
+      domain_username: "{{ domain_admin_username }}"
+      domain_password: "{{ domain_admin_password }}"
+      domain_server: "{{ domain_server }}"
+
+  - name: Add interactive remote login rights
+    ansible.windows.win_user_right:
+      name: SeRemoteInteractiveLogonRight
+      users:
+      - "Domain Users"
+      action: add
+
+  - name: Add Win DNS records
+    community.windows.win_dns_record:
+      state: "{{ item.dns_state | default('present') }}"
+      name: "{{ item.dns_name }}"
+      type: "{{ item.dns_type | default('A') }}"
+      value: "{{ item.dns_value | default(omit) }}"
+      zone: "{{ item.dns_zone | default('festdemo.demoredhat.com') }}"
+    loop: "{{ dns_records }}"
+    tags:
+      - dns-records

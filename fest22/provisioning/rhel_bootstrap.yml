@@ -1,0 +1,52 @@
+---
+- name: Prepare local control server
+  hosts: localhost
+  become: false
+  gather_facts: false
+
+  tasks:
+  - name: Install and upgrade collections
+    ansible.builtin.command: "ansible-galaxy collection install -r {{ playbook_dir }}/collections/requirements.yml --upgrade"
+    register: __collection_install
+    changed_when: '"was installed successfully" in __collection_install.stdout'
+    tags:
+      - install-collections
+
+- name: Bootstrap box
+  hosts: ipaserver
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Enable Python39 module
+      ansible.builtin.raw: dnf -y module enable python39
+      register: __module_output
+      changed_when: '"Nothing to do" not in __module_output.stdout'
+
+    - name: Install Python39
+      ansible.builtin.raw: dnf -y module install python39
+      register: __module_output
+      changed_when: '"Nothing to do" not in __module_output.stdout'
+
+    - name: Install packages
+      ansible.builtin.dnf:
+        name:
+          - vim
+          - net-tools
+        state: present
+
+    - name: Set EC2 instance hostname permanent
+      ansible.builtin.lineinfile:
+        path: /etc/cloud/cloud.cfg
+        line: 'preserve_hostname: true'
+        state: present
+
+    - name: Set EC2 instance hostname
+      ansible.builtin.hostname:
+        name: idm.festdemo.demoredhat.com
+        use: systemd
+
+    - name: Reboot EC2 instance
+      ansible.builtin.reboot:
+        connect_timeout: 120
+
