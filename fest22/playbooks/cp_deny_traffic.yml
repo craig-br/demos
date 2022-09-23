@@ -17,7 +17,7 @@
         name: "asa-{{ destination_ip }}"
         ip_address: "{{ destination_ip }}"
 
-    - name: Create access rule to allow access from source to destination
+    - name: Create access rule to drop access from source to destination
       check_point.mgmt.checkpoint_access_rule:
         auto_install_policy: yes
         auto_publish_session: yes
