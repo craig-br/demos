@@ -13,7 +13,7 @@
         ip_address: "{{ source_ip }}"
 
     - name: Create destination IP host object
-      checkpoint.mgmt.checkpoint_host:
+      check_point.mgmt.checkpoint_host:
         name: "asa-{{ destination_ip }}"
         ip_address: "{{ destination_ip }}"
 
