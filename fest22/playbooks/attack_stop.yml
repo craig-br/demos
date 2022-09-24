@@ -1,0 +1,14 @@
+---
+- name: Stop simulated attack
+  hosts: attacker
+
+  tasks:
+    - name: Disable attack timer
+      ansible.builtin.systemd:
+        name: nmap.timer
+        state: stopped
+
+    - name: Stop attack service
+      ansible.builtin.systemd:
+        name: nmap.service
+        state: stopped

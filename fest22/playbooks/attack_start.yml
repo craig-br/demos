@@ -1,0 +1,69 @@
+---
+- name: Start attacker
+  hosts: attack
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: copy systemd timer file
+      ansible.builtin.copy: # no qa risky-file-permissions
+        src: nmap.timer
+        dest: /etc/systemd/system/nmap.timer
+
+    - name: copy systemd service file
+      ansible.builtin.template:
+        src: nmap.service.j2
+        dest: /etc/systemd/system/nmap.service
+
+    - name: systemd daemon-reload
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: systemctl start nmap timer
+      ansible.builtin.systemd:
+        name: nmap.timer
+        state: started
+
+    - name: systemctl start nmap service
+      ansible.builtin.systemd:
+        name: nmap.service
+        state: started
+
+- name: Start target
+  hosts: adservers
+  gather_facts: false
+
+  tasks:
+    # - name: Create a new service
+    #   ansible.windows.win_service:
+    #     name: ncat
+    #     path: "C:\ncat.exe -lk -vv --listen 8082"
+    #     state: started
+    #     start_mode: manual
+    #     failure_actions:
+    #       - type: restart
+    #   tags:
+    #     - ncat
+
+# This will yield the following command: C:\windows\foo.exe bar "true"
+    # - name: Install the ncat service with a list of parameters
+    #   community.windows.win_nssm:
+    #     name: ncat
+    #     application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+    #     executable: C:\ProgramData\chocolatey\bin\nssm.exe
+    #     arguments:
+    #       - -lk -vv --listen 8082
+    #     start_mode: manual
+    #     state: present
+    #   tags:
+    #     - ncat
+
+    # - name: Start ncat service for target port
+    #   ansible.builtin.raw: |
+    #       $process = Get-Process -Name ncat -ErrorAction SilentlyContinue
+    #       if (-Not $process) {
+    #          'Start-Job -ScriptBlock { Start-Process "C:\Program Files (x86)\Nmap\ncat.exe" -ArgumentList "-lk -vv --listen 8082" }'
+    #       }
+    #   register: __ncat_service
+    #   tags:
+    #     - ncat

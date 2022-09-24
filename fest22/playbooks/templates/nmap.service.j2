@@ -1,0 +1,5 @@
+[Unit]
+Description=nmap
+
+[Service]
+ExecStart=-/usr/bin/nmap  -p 8082 {{ hostvars['windows-ad']['private_ip2'] }}
