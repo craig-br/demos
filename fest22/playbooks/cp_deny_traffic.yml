@@ -8,18 +8,17 @@
 
   tasks:
     - name: Create source IP host object
-      check_point.mgmt.checkpoint_host:
+      check_point.mgmt.cp_mgmt_host:
         name: "asa-{{ source_ip }}"
         ip_address: "{{ source_ip }}"
 
     - name: Create destination IP host object
-      check_point.mgmt.checkpoint_host:
+      check_point.mgmt.cp_mgmt_host:
         name: "asa-{{ destination_ip }}"
         ip_address: "{{ destination_ip }}"
 
     - name: Create access rule to drop access from source to destination
-      check_point.mgmt.checkpoint_access_rule:
-        auto_install_policy: yes
+      check_point.mgmt.cp_mgmt_access_rule:
         auto_publish_session: yes
         layer: Network
         position: top

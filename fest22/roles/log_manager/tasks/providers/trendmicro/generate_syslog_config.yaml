@@ -1,0 +1,29 @@
+- name: Manage Syslog config policy by name
+  trendmicro.deepsec.deepsec_syslog:
+    state: "{{ state }}"
+    name: "{{ trendmicro_syslog_config_name }}"
+    facility: local0
+    event_format: leef
+    direct: false
+    server: "{{ syslog_server }}"
+    port: 514
+    transport: udp
+    description: Syslog API request from Ansible
+  register: result
+
+- name: Copy file with owner and permissions
+  ansible.builtin.copy:
+    content: "{{ result['syslog_config']['CreateSyslogConfigurationResponse']['syslogConfiguration']['ID'] }}"
+    dest: /tmp/syslog_config_id.conf
+  ignore_errors: true
+  register: copy_result
+  when:
+    - result['changed'] == true
+
+- name: Copy file with owner and permissions
+  ansible.builtin.copy:
+    content: "{{ result['syslog_config']['ID'] }}"
+    dest: /tmp/syslog_config_id.conf
+  ignore_errors: true
+  when:
+    - copy_result['changed'] == false
