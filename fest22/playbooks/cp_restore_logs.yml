@@ -1,5 +1,5 @@
 ---
-- name: Configure Check Point to send logs to QRadar
+- name: Configure Check Point to restore log configuration 
   hosts: checkpoint
 
   tasks:
