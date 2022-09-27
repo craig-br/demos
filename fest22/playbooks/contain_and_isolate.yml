@@ -4,6 +4,11 @@
   gather_facts: false
 
   tasks:
+    - name: Print the SOAR hostname
+      ansible.builtin.debug:
+        msg: "SOAR Hostname - {{ artifact_value }}"
+      when: artifact_value is defined
+
     - name: Get current logged in users
       ansible.windows.win_command: quser.exe
       register: __logged_in_users
@@ -39,5 +44,3 @@
       name: "{{ hostvars[ artifact_value | default('windows-ws')]['ansible_facts']['__compromised_user'] }}"
       state: present
       enabled: "{{ domain_user_enabled | default(false) }}"
-
-
