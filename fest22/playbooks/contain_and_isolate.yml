@@ -34,7 +34,7 @@
   gather_facts: true
 
   tasks:
-  - name: Set AD account status - {{ domain_user_enabled }}
+  - name: Set AD account status
     community.windows.win_domain_user:
       name: "{{ hostvars[ artifact_value | default('win1.festdemo.demoredhat.com')]['ansible_facts']['__compromised_user'] | default(domain_user_username) }}"
       state: present
