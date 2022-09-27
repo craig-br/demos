@@ -36,7 +36,7 @@
 
 - name: Manage AD users
   hosts: adservers
-  gather_facts: true
+  gather_facts: false
 
   tasks:
   - name: Set AD account status
