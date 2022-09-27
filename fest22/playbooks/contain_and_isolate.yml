@@ -19,11 +19,8 @@
     - name: Set current logged in user fact
       ansible.builtin.set_fact:
         __compromised_user: "{{ __logged_in_users['output'][0]['UserName'] | default(domain_user_username) }}"
-        # __compromised_user: "{{ __logged_in_users.stdout_lines[1].split()[0] | default(domain_user_username) }}"
         cacheable: true
 
-    # - debug:
-    #     var: __logged_in_users['output'][0]['UserName']
 - name: Manage AD shares
   hosts: fileservers
   gather_facts: false
