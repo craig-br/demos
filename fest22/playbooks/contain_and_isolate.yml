@@ -1,6 +1,6 @@
 ---
 - name: Contain and isolate identity
-  hosts: "{{ artifact_value | default('windows-ws') }}"
+  hosts: "{{ artifact_value | default('windows-ad') }}"
   gather_facts: false
 
   tasks:
@@ -10,14 +10,20 @@
       when: artifact_value is defined
 
     - name: Get current logged in users
-      ansible.windows.win_command: quser.exe
+      ansible.windows.win_powershell:
+        script: |
+          Get-LoggedInUser  | where{$_.state -match 'Active'}
+      changed_when: false
       register: __logged_in_users
 
     - name: Set current logged in user fact
       ansible.builtin.set_fact:
-        __compromised_user: "{{ __logged_in_users.stdout_lines[1].split()[0] }}"
+        __compromised_user: "{{ __logged_in_users['output'][0]['UserName'] | default(domain_user_username) }}"
+        # __compromised_user: "{{ __logged_in_users.stdout_lines[1].split()[0] | default(domain_user_username) }}"
         cacheable: true
 
+    # - debug:
+    #     var: __logged_in_users['output'][0]['UserName']
 - name: Manage AD shares
   hosts: fileservers
   gather_facts: false
@@ -29,7 +35,7 @@
         path: "{{ item.domain_share_path }}"
         list: true
         full: "{{ item.domain_share_users }}"
-        deny: "{{ hostvars[ artifact_value | default('windows-ws')]['ansible_facts']['__compromised_user'] }}"
+        deny: "FESTDEMO\\{{ hostvars[ artifact_value | default('windows-ad')]['ansible_facts']['__compromised_user'] }}"
         state: "{{ item.domain_share_state }}"
       loop: "{{ domain_shares }}"
       when: (domain_shares is defined) and (domain_shares | length > 0)
@@ -41,6 +47,6 @@
   tasks:
   - name: Set AD account status
     community.windows.win_domain_user:
-      name: "{{ hostvars[ artifact_value | default('windows-ws')]['ansible_facts']['__compromised_user'] }}"
+      name: "{{ hostvars[ artifact_value | default('windows-ad')]['ansible_facts']['__compromised_user'] }}"
       state: present
       enabled: "{{ domain_user_enabled | default(false) }}"
