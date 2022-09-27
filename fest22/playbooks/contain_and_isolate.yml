@@ -1,6 +1,6 @@
 ---
 - name: Contain and isolate identity
-  hosts: "{{ artifact_value | default('filservers') }}"
+  hosts: "{{ artifact_value | default('fileservers') }}"
   gather_facts: false
 
   tasks:
@@ -24,7 +24,7 @@
         path: "{{ item.domain_share_path }}"
         list: true
         full: "{{ item.domain_share_users }}"
-        deny: "{{ hostvars[ artifact_value | default('filservers')]['ansible_facts']['__compromised_user'] | default(domain_user_username) }}"
+        deny: "{{ hostvars[ artifact_value | default('fileservers')]['ansible_facts']['__compromised_user'] | default(domain_user_username) }}"
         state: "{{ item.domain_share_state }}"
       loop: "{{ domain_shares }}"
       when: (domain_shares is defined) and (domain_shares | length > 0)
