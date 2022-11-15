@@ -1,6 +1,6 @@
 # Ansible security automation - Security response and remediation Zero Trust demo
 
-![AAP](assets/img/redhat-ansible-logo.svg)
+![AAP](assets/img/rh-ansible-automation-platform.png)
 
 ## Overview
 
