@@ -10,4 +10,4 @@ This content is purely examples to help get you started creating your own automa
 
 ## Demos
 
-- [Ansible security automation - Security response and remediation Zero Trust demo](README.md).
+- [Ansible security automation - Security response and remediation Zero Trust demo](./zta-windows/README.md).
