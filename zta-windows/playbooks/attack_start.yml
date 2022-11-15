@@ -1,0 +1,32 @@
+---
+- name: Start attacker
+  hosts: attack
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: Copy systemd timer file
+      ansible.builtin.copy: # no qa risky-file-permissions
+        src: nmap.timer
+        mode: 0644
+        dest: /etc/systemd/system/nmap.timer
+
+    - name: Copy systemd service file
+      ansible.builtin.template:
+        src: nmap.service.j2
+        mode: 0644
+        dest: /etc/systemd/system/nmap.service
+
+    - name: Systemd daemon-reload
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Systemctl start nmap timer
+      ansible.builtin.systemd:
+        name: nmap.timer
+        state: started
+
+    - name: Systemctl start nmap service
+      ansible.builtin.systemd:
+        name: nmap.service
+        state: started

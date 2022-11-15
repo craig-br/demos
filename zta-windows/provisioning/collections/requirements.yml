@@ -1,6 +1,4 @@
 ---
 collections:
-  - freeipa.ansible_freeipa
-  - trendmicro.deepsec
   - ansible.windows
   - community.windows

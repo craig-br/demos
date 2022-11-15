@@ -19,7 +19,7 @@
 
     - name: Create access rule to drop access from source to destination
       check_point.mgmt.cp_mgmt_access_rule:
-        auto_publish_session: yes
+        auto_publish_session: true
         layer: Network
         position: top
         name: "asa-accept-{{ source_ip }}-to-{{ destination_ip }}"
@@ -30,5 +30,5 @@
     - name: Install policy
       check_point.mgmt.cp_mgmt_install_policy:
         policy_package: standard
-        install_on_all_cluster_members_or_fail: yes
+        install_on_all_cluster_members_or_fail: true
       failed_when: false

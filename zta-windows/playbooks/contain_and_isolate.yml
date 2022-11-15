@@ -6,7 +6,7 @@
   tasks:
     - name: Print the SOAR hostname
       ansible.builtin.debug:
-        msg: "SOAR Hostname - {{ artifact_value }}"
+        msg: "SOAR Hostname - {{ artifact_value }}" # Artifact hostname value used in SOAR
       when: artifact_value is defined
 
     - name: Get current logged in users
@@ -32,7 +32,7 @@
         path: "{{ item.domain_share_path }}"
         list: true
         full: "{{ item.domain_share_users }}"
-        deny: "FESTDEMO\\{{ hostvars[ artifact_value | default('windows-ad')]['ansible_facts']['__compromised_user'] }}"
+        deny: "FESTDEMO\\{{ hostvars[artifact_value | default('windows-ad')]['ansible_facts']['__compromised_user'] }}"
         state: "{{ item.domain_share_state }}"
       loop: "{{ domain_shares }}"
       when: (domain_shares is defined) and (domain_shares | length > 0)
@@ -42,8 +42,8 @@
   gather_facts: false
 
   tasks:
-  - name: Set AD account status
-    community.windows.win_domain_user:
-      name: "{{ hostvars[ artifact_value | default('windows-ad')]['ansible_facts']['__compromised_user'] }}"
-      state: present
-      enabled: "{{ domain_user_enabled | default(false) }}"
+    - name: Set AD account status
+      community.windows.win_domain_user:
+        name: "{{ hostvars[artifact_value | default('windows-ad')]['ansible_facts']['__compromised_user'] }}"
+        state: present
+        enabled: "{{ domain_user_enabled | default(false) }}"

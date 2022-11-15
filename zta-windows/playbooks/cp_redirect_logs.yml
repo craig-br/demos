@@ -1,5 +1,5 @@
 ---
-- name: Configure Check Point to restore log configuration
+- name: Configure Check Point to send logs to QRadar
   hosts: checkpoint
 
   tasks:
@@ -29,25 +29,8 @@
       register: object_data
 
     - name: Import tasks from log_manager role
-      ansible.builtin.include_tasks: "{{ playbook_dir }}/roles/log_manager/tasks/unforward_logs_to_syslog.yaml"
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/roles/log_manager/tasks/forward_logs_to_syslog.yaml"
       vars:
         syslog_server: "{{ hostvars['qradar']['public_ip'] }}"
-        checkpoint_server_name: "{{ object_data.json.objects | selectattr('type', 'match', 'CpmiHostCkp')|map(attribute='name')|join(',') }}"
+        checkpoint_server_name: "{{ object_data.json.objects | selectattr('type', 'match', 'CpmiHostCkp') | map(attribute='name') | join(',') }}"
         firewall_provider: checkpoint
-
-# - name: Add Check Point log source to QRadar
-#   hosts: qradar
-
-#   tasks:
-#     - name: Add Check Point remote logging to QRadar
-#       ibm.qradar.qradar_log_source_management:
-#         name: "Check Point source - {{ hostvars['checkpoint']['public_ip'] }}"
-#         type_name: "Check Point FireWall-1"
-#         state: absent
-#         description: "Check Point log source"
-#         identifier: "{{ hostvars['checkpoint']['public_ip'] }}"
-
-#     - name: deploy the new log sources
-#       ibm.qradar.qradar_deploy:
-#         type: INCREMENTAL
-#       failed_when: false
