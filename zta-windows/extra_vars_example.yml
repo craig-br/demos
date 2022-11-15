@@ -1,46 +1,45 @@
-win_user_password: 'Win user password'
-domain_admin_username: administrator@festdemo.demoredhat.com
-domain_admin_password: 'AD Admin password'
-domain_server: win1.festdemo.demoredhat.com
-
 domain_user_username: harry
+win_user_password: 'Win user password'
 domain_user_enabled: false
-
+domain_admin_username: 'AD Admin username'
+domain_admin_password: 'AD Admin password'
+domain_server: 'Win AD server FQDN'
+# Domain shares
 domain_shares:
   - domain_share_name: Corporate data
     domain_share_state: present
-    domain_share_users: "Administrators,FESTDEMO\\{{ domain_user_username }}"
+    domain_share_users: "Administrators,'AD Domain name'\\{{ domain_user_username }}"
     domain_share_path: C:\Corporate data
-
 # AD DNS records
+dns_zone: 'DNS Zone FQDN'
 dns_records:
-  - dns_name: "aap.festdemo.demoredhat.com"
+  - dns_name: "Automation controller FQDN"
     dns_state: present
     dns_type: "A"
-    dns_value: "172.16.95.79"
-    dns_zone: festdemo.demoredhat.com
-  - dns_name: "deepsec.festdemo.demoredhat.com"
+    dns_value: "IP Address"
+    dns_zone: "{{ dns_zone }}"
+  - dns_name: "Trend Micro Deep Security FQDN"
     dns_state: present
     dns_type: "A"
-    dns_value: "34.209.76.104"
-    dns_zone: festdemo.demoredhat.com
-  - dns_name: "soar.festdemo.demoredhat.com"
+    dns_value: "IP Address"
+    dns_zone: "{{ dns_zone }}"
+  - dns_name: "IBM SOAR FQDN"
     dns_state: present
     dns_type: "A"
-    dns_value: "172.16.166.80"
-    dns_zone: festdemo.demoredhat.com
-  - dns_name: "qradar.festdemo.demoredhat.com"
+    dns_value: "IP Address"
+    dns_zone: "{{ dns_zone }}"
+  - dns_name: "QRadar FQDN"
     dns_state: present
     dns_type: "A"
-    dns_value: "169.62.31.248"
-    dns_zone: festdemo.demoredhat.com
-  - dns_name: "win2.festdemo.demoredhat.com"
+    dns_value: "IP Address"
+    dns_zone: "{{ dns_zone }}"
+  - dns_name: "Win file server FQDN"
     dns_state: present
     dns_type: "A"
-    dns_value: "172.16.152.18"
-    dns_zone: festdemo.demoredhat.com
-  - dns_name: "checkpoint.festdemo.demoredhat.com"
+    dns_value: "IP Address"
+    dns_zone: "{{ dns_zone }}"
+  - dns_name: "Check Point Management server FQDN"
     dns_state: present
     dns_type: "A"
-    dns_value: "172.16.130.215"
-    dns_zone: festdemo.demoredhat.com
+    dns_value: "IP Address"
+    dns_zone: "{{ dns_zone }}"
