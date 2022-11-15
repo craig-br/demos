@@ -1,0 +1,7 @@
+- name:  Disable sending checkpoint management server logs to syslog
+  cp_mgmt_run_script:
+    script_name: "Disable sending checkpoint management server logs to syslog"
+    # script: "EXPORTERDIR=/opt/CPrt-R80/log_exporter cp_log_export delete name syslog-172.16.82.193 --apply-now"
+    script: "EXPORTERDIR=/opt/CPrt-R80/log_exporter cp_log_export delete name syslog-{{ syslog_server }} --apply-now"
+    targets: 
+      - "{{ checkpoint_server_name }}"

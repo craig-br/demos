@@ -1,0 +1,49 @@
+---
+- name: Contain and isolate identity
+  hosts: "{{ artifact_value | default('windows-ad') }}"
+  gather_facts: false
+
+  tasks:
+    - name: Print the SOAR hostname
+      ansible.builtin.debug:
+        msg: "SOAR Hostname - {{ artifact_value }}" # Artifact hostname value used in SOAR
+      when: artifact_value is defined
+
+    - name: Get current logged in users
+      ansible.windows.win_powershell:
+        script: |
+          Get-LoggedInUser  | where{$_.state -match 'Active'}
+      changed_when: false
+      register: __logged_in_users
+
+    - name: Set current logged in user fact
+      ansible.builtin.set_fact:
+        __compromised_user: "{{ __logged_in_users['output'][0]['UserName'] | default(domain_user_username) }}"
+        cacheable: true
+
+- name: Manage AD shares
+  hosts: fileservers
+  gather_facts: false
+
+  tasks:
+    - name: Manage Corporate share
+      ansible.windows.win_share:
+        name: "{{ item.domain_share_name }}"
+        path: "{{ item.domain_share_path }}"
+        list: true
+        full: "{{ item.domain_share_users }}"
+        deny: "FESTDEMO\\{{ hostvars[artifact_value | default('windows-ad')]['ansible_facts']['__compromised_user'] }}"
+        state: "{{ item.domain_share_state }}"
+      loop: "{{ domain_shares }}"
+      when: (domain_shares is defined) and (domain_shares | length > 0)
+
+- name: Manage AD users
+  hosts: adservers
+  gather_facts: false
+
+  tasks:
+    - name: Set AD account status
+      community.windows.win_domain_user:
+        name: "{{ hostvars[artifact_value | default('windows-ad')]['ansible_facts']['__compromised_user'] }}"
+        state: present
+        enabled: "{{ domain_user_enabled | default(false) }}"

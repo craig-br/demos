@@ -1,0 +1,15 @@
+---
+- name: Manage AD shares
+  hosts: fileservers
+  gather_facts: false
+
+  tasks:
+    - name: Manage Corporate share
+      ansible.windows.win_share:
+        name: "{{ item.domain_share_name }}"
+        path: "{{ item.domain_share_path }}"
+        list: true
+        full: "{{ item.domain_share_users }}"
+        state: "{{ item.domain_share_state }}"
+      loop: "{{ domain_shares }}"
+      when: (domain_shares is defined) and (domain_shares | length > 0)

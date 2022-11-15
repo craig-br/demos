@@ -1,0 +1,11 @@
+---
+- name: Manage AD users
+  hosts: adservers
+  gather_facts: false
+
+  tasks:
+  - name: Set AD account status {{ domain_user_username }} {{ domain_user_enabled }} # noqa name[template]
+    community.windows.win_domain_user:
+      name: "{{ domain_user_username }}"
+      state: present
+      enabled: "{{ domain_user_enabled }}"

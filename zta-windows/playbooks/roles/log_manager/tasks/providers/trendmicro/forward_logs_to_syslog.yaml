@@ -1,0 +1,6 @@
+- name: Enable sending TrendMicro DeepSecurity logs to configured syslog
+  trendmicro.deepsec.deepsec_system_settings:
+    state: "{{ state }}"
+    config:
+      platform_setting_syslog_config_id:
+        value: "{{ lookup('file', '/tmp/syslog_config_id.conf') }}"

@@ -1,0 +1,14 @@
+- name: Enable sending checkpoint management server logs to syslog
+  cp_mgmt_run_script:
+    script_name: "Enable sending checkpoint management server logs to syslog"
+    script: "EXPORTERDIR=/opt/CPrt-R80/log_exporter cp_log_export add name syslog-{{ syslog_server }} target-server {{ syslog_server }} target-port 514 protocol udp format leef read-mode semi-unified"
+    # script: "EXPORTERDIR=/opt/CPrt-R80/log_exporter cp_log_export add name syslog-{{ syslog_server }} target-server {{ syslog_server }} target-port 514 protocol udp format generic"
+    targets: 
+      - "{{ checkpoint_server_name }}"
+
+- name: Restart log exporter
+  cp_mgmt_run_script:
+    script_name: "Restart log exporter"
+    script: "EXPORTERDIR=/opt/CPrt-R80/log_exporter cp_log_export restart name syslog-{{ syslog_server }}"
+    targets: 
+      - "{{ checkpoint_server_name }}"

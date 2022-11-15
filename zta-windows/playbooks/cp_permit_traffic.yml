@@ -1,0 +1,34 @@
+---
+- name: Permit attacker
+  hosts: checkpoint
+
+  vars:
+    source_ip: "{{ hostvars['attacker']['private_ip2'] }}"
+    destination_ip: "{{ hostvars['windows-ad']['private_ip2'] }}"
+
+  tasks:
+    - name: Create source IP host object
+      check_point.mgmt.cp_mgmt_host:
+        name: "asa-{{ source_ip }}"
+        ip_address: "{{ source_ip }}"
+
+    - name: Create destination IP host object
+      check_point.mgmt.cp_mgmt_host:
+        name: "asa-{{ destination_ip }}"
+        ip_address: "{{ destination_ip }}"
+
+    - name: Create access rule to allow access from source to destination
+      check_point.mgmt.cp_mgmt_access_rule:
+        auto_publish_session: true
+        layer: Network
+        position: top
+        name: "asa-accept-{{ source_ip }}-to-{{ destination_ip }}"
+        source: "asa-{{ source_ip }}"
+        destination: "asa-{{ destination_ip }}"
+        action: accept
+
+    - name: Install policy
+      check_point.mgmt.cp_mgmt_install_policy:
+        policy_package: standard
+        install_on_all_cluster_members_or_fail: true
+      failed_when: false

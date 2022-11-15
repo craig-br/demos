@@ -1,0 +1,1 @@
+- include_tasks: "./providers/{{ firewall_provider }}/generate_syslog_config.yaml"
