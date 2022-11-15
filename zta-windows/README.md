@@ -2,6 +2,8 @@
 
 ## Overview
 
+[**Slide deck**](zta_demo_slides.pdf)
+
 According to the Cyber Resilient Organization Study 2021, 66% of surveyed leaders recognize that automation, machine learning, AI and orchestration strengthen cyber resiliency.
 
 This demo illustrates how Ansible security automation can be used to contain and isolate a a potential cyber-attack and automate remediation tasks.
