@@ -1,7 +1,0 @@
----
-# collections:
-  # - ansible.windows
-  # - community.windows
-  # - check_point.mgmt
-  # - trendmicro.deepsec
-
