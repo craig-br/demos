@@ -7,4 +7,5 @@
   vars:
     reg_key: 
   tasks:
-    - name: Assert registry key exists
+    # - name: Assert registry key exists
+    - ansible.builtin.setup:
