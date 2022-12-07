@@ -1,0 +1,26 @@
+---
+plugin: amazon.aws.aws_ec2
+regions:
+  - us-east-1
+keyed_groups:
+  - prefix: tag
+    key: tags
+compose:
+  # use a private address where a public one isn't assigned
+  ansible_host: public_ip_address|default(private_ip_address)
+filters:
+  # All instances with their state as `running`
+  instance-state-name: running
+  tag:Demo: wave
+groups:
+  windows: platform == 'windows'
+
+windows:
+  vars:
+    ansible_connection: winrm
+    ansible_winrm_transport: basic
+    ansible_user: Administrator
+    ansible_password: "{{ admin_password }}"
+    ansible_winrm_server_cert_validation: ignore
+    ansible_shell_type: cmd
+    ansible_port: 5986

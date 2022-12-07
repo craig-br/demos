@@ -1,0 +1,10 @@
+---
+- name: Assert Win registry key entry
+  hosts: "{{ windows_group | default('windows') }}"
+  become: false
+  gather_facts: false
+
+  vars:
+    reg_key: 
+  tasks:
+    - name: Assert registry key exists
