@@ -15,5 +15,5 @@
       ansible.windows.win_regedit:
         path: "{{ reg_path }}"
         name: "{{ reg_name }}"
-        data: "{{ reg_data }}"
+        data: "{{ reg_remediated_data }}"
       register: __reg_key
