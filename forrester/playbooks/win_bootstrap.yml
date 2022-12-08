@@ -4,7 +4,7 @@
   gather_facts: false
 
   tasks:
-    - name: Provision an EC2 Win2019 instances
+    - name: Provision an EC2 Win instances
       amazon.aws.ec2_instance:
         state: "{{ item.state }}"
         name: "{{ item.name }}"
@@ -21,29 +21,29 @@
         wait: "{{ item.wait }}"
         user_data: "{{ item.user_data }}"
       register: __ec2_results
-      loop: "{{ ec2_instances }}"
+      loop: "{{ ec2_win_instances }}"
       tags:
         - create-instances
 
-    - name: Provision an EC2 Win2022 instance
-      amazon.aws.ec2_instance:
-        state: "{{ item.state }}"
-        name: "{{ item.name }}"
-        region: "{{ item.region }}"
-        key_name: "{{ item.key_name }}"
-        vpc_subnet_id: "{{ item.vpc_subnet_id }}"
-        instance_type: "{{ item.instance_type }}"
-        security_group: "{{ item.security_group }}"
-        exact_count: "{{ item.exact_count }}"
-        network: "{{ item.network }}"
-        image_id: "{{ item.image_id }}"
-        tags: "{{ item.tags }}"
-        wait: "{{ item.wait }}"
-        user_data: "{{ item.user_data }}"
-      register: __ec2_results
-      loop: "{{ ec2_instances }}"
-      tags:
-        - create-instances
+    # - name: Provision an EC2 Win2022 instance
+    #   amazon.aws.ec2_instance:
+    #     state: "{{ item.state }}"
+    #     name: "{{ item.name }}"
+    #     region: "{{ item.region }}"
+    #     key_name: "{{ item.key_name }}"
+    #     vpc_subnet_id: "{{ item.vpc_subnet_id }}"
+    #     instance_type: "{{ item.instance_type }}"
+    #     security_group: "{{ item.security_group }}"
+    #     exact_count: "{{ item.exact_count }}"
+    #     network: "{{ item.network }}"
+    #     image_id: "{{ item.image_id }}"
+    #     tags: "{{ item.tags }}"
+    #     wait: "{{ item.wait }}"
+    #     user_data: "{{ item.user_data }}"
+    #   register: __ec2_results
+    #   loop: "{{ ec2_instances }}"
+    #   tags:
+    #     - create-instances
 
     - name: Get ec2 instance info
       amazon.aws.ec2_instance_info:
@@ -67,8 +67,6 @@
           ansible.builtin.wait_for:
             host: "{{ __instances_rdp_async_item.public_dns_name }}"
             port: 5986
-            delay: 1
-            timeout: 120
           loop: "{{ __ec2_instance_info.instances }}"
           loop_control:
             loop_var: __instances_rdp_async_item
@@ -81,7 +79,7 @@
         - name: "Wait for ec2 instances - WinRM | Async"
           ansible.builtin.async_status:
             jid: "{{ __instances_rdp_async_result_item.ansible_job_id }}"
-          retries: 120
+          retries: 180
           delay: 1
           loop: "{{ __instances_rdp_async.results }}"
           loop_control:
