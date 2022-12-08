@@ -1,0 +1,114 @@
+---
+- name: Provision Windows
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Provision an EC2 Win2019 instances
+      amazon.aws.ec2_instance:
+        state: "{{ item.state }}"
+        name: "{{ item.name }}"
+        # name: "{{ item.name }}-0{{ __ec2_results.ami_launch_index + 1 | int }}"
+        region: "{{ item.region }}"
+        key_name: "{{ item.key_name }}"
+        vpc_subnet_id: "{{ item.vpc_subnet_id }}"
+        instance_type: "{{ item.instance_type }}"
+        security_group: "{{ item.security_group }}"
+        exact_count: "{{ item.exact_count }}"
+        network: "{{ item.network }}"
+        image_id: "{{ item.image_id }}"
+        tags: "{{ item.tags }}"
+        wait: "{{ item.wait }}"
+        user_data: "{{ item.user_data }}"
+
+      register: __ec2_results
+      loop: "{{ ec2_instances }}"
+      tags:
+        - create-instances
+
+    - name: Get ec2 instance info
+      amazon.aws.ec2_instance_info:
+        region: "{{ ec2_region }}"
+        filters:
+          tag:Demo: wave
+          platform: windows
+          instance-state-name: [ "running"]
+      register: __ec2_instance_info
+      tags:
+        - create-instances
+        - win-password
+
+    - name: Wait for ec2 instances to start
+      when:
+        - ('"windows" in groups') and ('groups["windows"]')
+      tags:
+        - create-instances
+      block:
+        - name: Wait for win2019 ec2 instances - WinRM
+          ansible.builtin.wait_for:
+            host: "{{ __instances_rdp_async_item.public_dns_name }}"
+            port: 5986
+            delay: 3
+            timeout: 120
+          loop: "{{ __ec2_instance_info.instances }}"
+          loop_control:
+            loop_var: __instances_rdp_async_item
+            label: "{{ __instances_rdp_async_item.public_dns_name }}"
+          async: 1000
+          poll: 0
+          register: __instances_rdp_async
+          changed_when: not __instances_rdp_async.changed
+
+        - name: "Wait for win2019 ec2 instances - WinRM | Async"
+          ansible.builtin.async_status:
+            jid: "{{ __instances_rdp_async_result_item.ansible_job_id }}"
+          retries: 60
+          delay: 2
+          loop: "{{ __instances_rdp_async.results }}"
+          loop_control:
+            loop_var: __instances_rdp_async_result_item
+            label: "{{ __instances_rdp_async_result_item.__instances_rdp_async_item.public_dns_name }}"
+          until: __instances_rdp_async_result.finished
+          register: __instances_rdp_async_result
+          when: __instances_rdp_async_result_item.ansible_job_id is defined
+
+    - name: Add ec2 instances to inventory group - windows
+      ansible.builtin.add_host: 
+        hostname: "{{ item.public_dns_name }}"
+        groups: windows
+        ansible_connection: winrm
+        ansible_winrm_transport: basic
+        ansible_user: Administrator
+        ansible_password: "{{ admin_password }}"
+        ansible_winrm_server_cert_validation: ignore
+        ansible_shell_type: cmd
+        ansible_port: 5986
+      loop: "{{ __ec2_instance_info.instances }}"
+      when:
+        - (__ec2_instance_info.instances is defined) and (__ec2_instance_info.instances | length > 0)
+
+- name: Configure Windows
+  hosts: windows
+  gather_facts: true
+  tasks:
+    - name: Add windows roles - {{ inventory_hostname }}
+      ansible.windows.win_feature:
+        name:
+          - DNS
+        state: present
+        include_management_tools: true
+      register: __win_feature
+
+    - name: Reboot for feature install - {{ inventory_hostname }}
+      ansible.windows.win_reboot:
+      when: __win_feature.reboot_required
+
+    # KB4569509: Guidance for DNS Server Vulnerability CVE-2020-1350
+    - name: Add vulnerable reg key
+      ansible.windows.win_regedit:
+        state: present
+        path: "{{ item.path }}"
+        name: "{{ item.name }}"
+        type: "{{ item.type }}"
+        data: "{{ item.data }}"
+      loop: "{{ win_reg }}"

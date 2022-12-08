@@ -21,10 +21,10 @@
 
   vars:
     controller_login: &controller_login
-      controller_username: "{{ controller_username }}"
-      controller_password: "{{ controller_password }}"
-      controller_host: "{{ controller_hostname }}"
-      validate_certs: "{{ controller_validate_certs }}"
+      # controller_username: "{{ controller_username | default(omit)}}"
+      # controller_password: "{{ controller_password | default(omit) }}"
+      controller_host: "{{ controller_hostname | default(omit) }}"
+      validate_certs: "{{ controller_validate_certs | default(omit) }}"
     # reg_data: 0xFFFF
 
   tasks:

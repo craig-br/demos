@@ -1,0 +1,45 @@
+---
+- name: Controller object configuration
+  hosts: tag_Name_craig_zta_controller
+  gather_facts: false
+  
+  tasks:
+    - name: Download custom execution environments
+      when: (controller_execution_environments is defined) and (controller_execution_environments | length > 0)
+      tags:
+        - controller-config
+      block:
+        - name: Download and upgrade collections - {{ inventory_hostname }}
+          ansible.builtin.command: "ansible-galaxy collection install {{ item }} --upgrade"
+          loop:
+            - containers.podman
+          register: __collection_install
+          changed_when: '"is already installed, skipping" not in __collection_install.stdout'
+
+        - name: Log into registry.redhat.io
+          become_user: "awx"
+          containers.podman.podman_login:
+            registry: "registry.redhat.io"
+            username: "{{ registry_username }}"
+            password: "{{ registry_password }}"
+
+        - name: Pull execution environment images
+          become_user: "awx"
+          containers.podman.podman_image:
+            name: "{{ item.image }}"
+          loop: "{{ controller_execution_environments }}"
+          register: __podman_pull_supported
+          until: __podman_pull_supported is not failed
+          retries: 40
+          delay: 2
+
+- name: Controller object configuration
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Create lab controller objects
+      ansible.builtin.import_role:
+        name: redhat_cop.controller_configuration.dispatch
+      tags:
+        - controller-config
