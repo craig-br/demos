@@ -12,6 +12,7 @@
 
 - name: Create temp vulnerable inventory
   hosts: tag_Name_craig_zta_controller
+  connec
   gather_facts: false
 
   vars:
