@@ -45,6 +45,13 @@
           awx.awx.host:
             name: "{{ __add_vuln_hosts_async_item }}"
             inventory: "{{ lab_vuln_inventory_name }}"
+            variables:
+              ansible_user: Administrator
+              ansible_password: '@ansible123!-wave'
+              ansible_connection: winrm
+              ansible_winrm_transport: basic
+              ansible_winrm_server_cert_validation: ignore
+              ansible_port: 5986
             state: present
             <<: *controller_login
           register: __add_vuln_hosts_async_item

@@ -1,14 +1,14 @@
 ---
-- name: Assert Win registry key entry
+- name: Remediate affected registries
   hosts: all
   become: false
   gather_facts: false
 
   tasks:
-    - name: CVE-2020-1350 - config registry key
+    - name: Remediate registry - CVE-2020-1350
       ansible.windows.win_regedit:
         path: "{{ reg_path }}"
         name: "{{ reg_name }}"
         data: "{{ reg_remediated_data }}"
       register: __reg_key
-      check_mode: "{{ test_remediation | default(false) | bool }}"
+      check_mode: "{{ deploy_prod | default(true) | bool }}"
