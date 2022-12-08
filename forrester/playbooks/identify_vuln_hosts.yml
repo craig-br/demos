@@ -12,7 +12,7 @@
 
 - name: Create temp vulnerable inventory
   hosts: tag_Name_craig_zta_controller
-  connec
+  connection: "{{ controller_connection | default('local') }}" # For testing on remote controllers
   gather_facts: false
 
   vars:
