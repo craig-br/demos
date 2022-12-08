@@ -1,0 +1,7 @@
+---
+- name: Assert Win registry key entry
+  hosts: all
+
+  tasks:
+    - name: Gather resource facts
+      ansible.builtin.setup:
