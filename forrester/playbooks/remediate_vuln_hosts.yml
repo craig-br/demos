@@ -17,3 +17,4 @@
         name: "{{ reg_name }}"
         data: "{{ reg_remediated_data }}"
       register: __reg_key
+      check_mode: "{{ test_remediation | default(false) }}"

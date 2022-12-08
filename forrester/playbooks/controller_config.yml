@@ -27,6 +27,7 @@
           become_user: "awx"
           containers.podman.podman_image:
             name: "{{ item.image }}"
+            force: "{{ item.force }}"
           loop: "{{ controller_execution_environments }}"
           register: __podman_pull_supported
           until: __podman_pull_supported is not failed
