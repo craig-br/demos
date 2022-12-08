@@ -20,7 +20,26 @@
         tags: "{{ item.tags }}"
         wait: "{{ item.wait }}"
         user_data: "{{ item.user_data }}"
+      register: __ec2_results
+      loop: "{{ ec2_instances }}"
+      tags:
+        - create-instances
 
+    - name: Provision an EC2 Win2022 instance
+      amazon.aws.ec2_instance:
+        state: "{{ item.state }}"
+        name: "{{ item.name }}"
+        region: "{{ item.region }}"
+        key_name: "{{ item.key_name }}"
+        vpc_subnet_id: "{{ item.vpc_subnet_id }}"
+        instance_type: "{{ item.instance_type }}"
+        security_group: "{{ item.security_group }}"
+        exact_count: "{{ item.exact_count }}"
+        network: "{{ item.network }}"
+        image_id: "{{ item.image_id }}"
+        tags: "{{ item.tags }}"
+        wait: "{{ item.wait }}"
+        user_data: "{{ item.user_data }}"
       register: __ec2_results
       loop: "{{ ec2_instances }}"
       tags:
@@ -44,11 +63,11 @@
       tags:
         - create-instances
       block:
-        - name: Wait for win2019 ec2 instances - WinRM
+        - name: Wait for Windows ec2 instances - WinRM
           ansible.builtin.wait_for:
             host: "{{ __instances_rdp_async_item.public_dns_name }}"
             port: 5986
-            delay: 3
+            delay: 1
             timeout: 120
           loop: "{{ __ec2_instance_info.instances }}"
           loop_control:
@@ -59,11 +78,11 @@
           register: __instances_rdp_async
           changed_when: not __instances_rdp_async.changed
 
-        - name: "Wait for win2019 ec2 instances - WinRM | Async"
+        - name: "Wait for ec2 instances - WinRM | Async"
           ansible.builtin.async_status:
             jid: "{{ __instances_rdp_async_result_item.ansible_job_id }}"
-          retries: 60
-          delay: 2
+          retries: 120
+          delay: 1
           loop: "{{ __instances_rdp_async.results }}"
           loop_control:
             loop_var: __instances_rdp_async_result_item
@@ -90,25 +109,29 @@
 - name: Configure Windows
   hosts: windows
   gather_facts: true
+
   tasks:
-    - name: Add windows roles - {{ inventory_hostname }}
+    - name: Add windows roles Win2019 - {{ inventory_hostname }}
       ansible.windows.win_feature:
         name:
           - DNS
         state: present
         include_management_tools: true
       register: __win_feature
+      when: '"Microsoft Windows Server 2019 Datacenter" in hostvars[inventory_hostname].ansible_os_name'
 
     - name: Reboot for feature install - {{ inventory_hostname }}
       ansible.windows.win_reboot:
-      when: __win_feature.reboot_required
+      when:
+        - __win_feature.reboot_required is defined
+        - __win_feature.reboot_required
 
     # KB4569509: Guidance for DNS Server Vulnerability CVE-2020-1350
-    - name: Add vulnerable reg key
+    - name: Add vulnerable Win2019 reg key 
       ansible.windows.win_regedit:
         state: present
-        path: "{{ item.path }}"
-        name: "{{ item.name }}"
-        type: "{{ item.type }}"
-        data: "{{ item.data }}"
-      loop: "{{ win_reg }}"
+        path: "{{ reg_path }}"
+        name: "{{ reg_name }}"
+        type: "{{ reg_type }}"
+        data: "{{ reg_data }}"
+      when: '"Microsoft Windows Server 2019 Datacenter" in hostvars[inventory_hostname].ansible_os_name'

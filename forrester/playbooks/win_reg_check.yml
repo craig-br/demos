@@ -1,6 +1,6 @@
 ---
 - name: Assert Win registry key entry
-  hosts: "{{ group_name | lower | default('windows') }}"
+  hosts: "{{ group_name | default('windows') | lower }}"
   become: false
   gather_facts: true
 

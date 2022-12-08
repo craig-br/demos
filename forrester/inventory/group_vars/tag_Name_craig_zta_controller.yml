@@ -3,4 +3,4 @@ ansible_user: ec2-user
 lab_organization: "Default"
 controller_host: https://aap.festdemo.demoredhat.com
 controller_validate_certs: false
-ansible_connection: local
+# ansible_connection: local
