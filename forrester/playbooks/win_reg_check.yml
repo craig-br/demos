@@ -2,7 +2,7 @@
 - name: Assert Win registry key entry
   hosts: "{{ group_name | lower | default('windows') }}"
   become: false
-  gather_facts: false
+  gather_facts: true
 
   # vars:
   #   reg_name: TcpReceivePacketSize
