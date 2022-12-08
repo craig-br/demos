@@ -11,4 +11,4 @@
         name: "{{ reg_name }}"
         data: "{{ reg_remediated_data }}"
       register: __reg_key
-      check_mode: "{{ deploy_prod | default(true) | bool }}"
+      check_mode: "{{ test_remediation | default(true) | bool }}"
