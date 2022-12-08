@@ -14,6 +14,6 @@ filters:
   instance-state-name: running
   tag:Demo: wave
 groups:
-  Windows: platform == 'windows'
-  Linux: platform == 'linux'
+  windows: platform == 'windows'
+  linux: platform == 'linux'
 use_extra_vars: true
