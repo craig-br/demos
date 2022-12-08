@@ -28,6 +28,13 @@
     # reg_data: 0xFFFF
 
   tasks:
+    - name: Refresh inventory - vulnerable hosts
+      awx.awx.inventory:
+        name: "Vulnerable windows hosts"
+        organization: "{{ lab_organization }}"
+        state: absent
+        <<: *controller_login
+
     - name: Create inventory - vulnerable hosts
       awx.awx.inventory:
         name: "Vulnerable windows hosts"
