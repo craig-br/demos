@@ -1,0 +1,73 @@
+---
+- name: Identify vulnerable hosts
+  hosts: "{{ group_name | default('windows') | lower }}"
+  gather_facts: true
+
+  tasks:
+    - name: CVE-2020-1350 registry key
+      ansible.windows.win_reg_stat:
+        path: "{{ reg_path }}"
+        name: "{{ reg_name }}"
+      register: __reg_key
+
+- name: Create temp vulnerable inventory
+  hosts: tag_Name_craig_zta_controller
+  gather_facts: false
+
+  vars:
+    controller_login: &controller_login
+      controller_username: "{{ controller_username | default(omit)}}"
+      controller_password: "{{ controller_password | default(omit) }}"
+      controller_host: "{{ controller_hostname | default(omit) }}"
+      validate_certs: "{{ controller_validate_certs | default(omit) }}"
+
+    distribution_version: 10.0.17763.0
+
+  tasks:
+    - name: Refresh inventory - vulnerable hosts
+      awx.awx.inventory:
+        name: "{{ lab_vuln_inventory_name }}"
+        organization: "{{ lab_organization }}"
+        state: absent
+        <<: *controller_login
+
+    - name: Create inventory - vulnerable hosts
+      awx.awx.inventory:
+        name: "{{ lab_vuln_inventory_name }}"
+        organization: "{{ lab_organization }}"
+        state: present
+        <<: *controller_login
+
+    - name: Add vulnerable hosts to inventory
+      block:
+        - name: Add vulnerable hosts
+          awx.awx.host:
+            name: "{{ __add_vuln_hosts_async_item }}"
+            inventory: "{{ lab_vuln_inventory_name }}"
+            state: present
+            <<: *controller_login
+          register: __add_vuln_hosts_async_item
+          async: 1000
+          poll: 0
+          when:
+            - hostvars[__add_vuln_hosts_async_item].__reg_key.value is defined
+            - hostvars[__add_vuln_hosts_async_item].__reg_key.value == reg_data
+            - hostvars[__add_vuln_hosts_async_item].ansible_distribution_version == distribution_version
+          changed_when: not __add_vuln_hosts_async_item.changed
+          loop: "{{ query('inventory_hostnames', 'windows') }}"
+          loop_control:
+            loop_var: __add_vuln_hosts_async_item
+            label: "{{ __add_vuln_hosts_async_item }}"
+
+        - name: Add vulnerable hosts | Async
+          ansible.builtin.async_status:
+            jid: "{{ __add_vuln_hosts_async_result_item.ansible_job_id }}"
+          retries: 60
+          delay: 1
+          loop: "{{ __add_vuln_hosts_async_item.results }}"
+          loop_control:
+            loop_var: __add_vuln_hosts_async_result_item
+            label: "{{ __add_vuln_hosts_async_result_item.__add_vuln_hosts_async_item }}"
+          until: __add_vuln_hosts_async_result.finished
+          register: __add_vuln_hosts_async_result
+          when: __add_vuln_hosts_async_result_item.ansible_job_id is defined
