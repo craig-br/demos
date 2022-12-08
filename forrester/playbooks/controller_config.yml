@@ -2,6 +2,7 @@
 - name: Controller object configuration
   hosts: tag_Name_craig_zta_controller
   gather_facts: false
+  connection: "{{ controller_connection | default('local') }}" # For testing on remote controllers
   
   tasks:
     - name: Download custom execution environments

@@ -4,12 +4,6 @@
   become: false
   gather_facts: false
 
-  # vars:
-  #   reg_name: TcpReceivePacketSize
-  #   reg_path: HKLM:\SYSTEM\CurrentControlSet\Services\DNS\Parameters
-  #   reg_data: 0xFFFF
-  #   reg_type: dword
-
   tasks:
     - name: CVE-2020-1350 - config registry key
       ansible.windows.win_regedit:
@@ -17,4 +11,4 @@
         name: "{{ reg_name }}"
         data: "{{ reg_remediated_data }}"
       register: __reg_key
-      check_mode: "{{ test_remediation | default(false) }}"
+      check_mode: "{{  test_remediation | bool | default(false) }}"
