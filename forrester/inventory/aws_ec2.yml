@@ -16,5 +16,5 @@ filters:
   tag:Demo: wave
 groups:
   windows: platform == 'windows'
-  linux: platform == 'Red Hat'
+  linux: platform_details == 'Red Hat Enterprise Linux'
 use_extra_vars: true
