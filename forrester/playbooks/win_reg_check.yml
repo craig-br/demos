@@ -30,14 +30,14 @@
   tasks:
     - name: Refresh inventory - vulnerable hosts
       awx.awx.inventory:
-        name: "Vulnerable windows hosts"
+        name: "{{ lab_vuln_inventory_name }}"
         organization: "{{ lab_organization }}"
         state: absent
         <<: *controller_login
 
     - name: Create inventory - vulnerable hosts
       awx.awx.inventory:
-        name: "Vulnerable windows hosts"
+        name: "{{ lab_vuln_inventory_name }}"
         organization: "{{ lab_organization }}"
         state: present
         <<: *controller_login
@@ -45,7 +45,7 @@
     - name: Add vulnerable hosts to inventory
       awx.awx.host:
         name: "{{ item }}"
-        inventory: "Vulnerable windows hosts"
+        inventory: "{{ lab_vuln_inventory_name }}"
         state: present
         <<: *controller_login
       when: hostvars[item].__reg_key.value == reg_data
