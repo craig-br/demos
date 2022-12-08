@@ -1,0 +1,19 @@
+---
+- name: Assert Win registry key entry
+  hosts: all
+  become: false
+  gather_facts: false
+
+  # vars:
+  #   reg_name: TcpReceivePacketSize
+  #   reg_path: HKLM:\SYSTEM\CurrentControlSet\Services\DNS\Parameters
+  #   reg_data: 0xFFFF
+  #   reg_type: dword
+
+  tasks:
+    - name: CVE-2020-1350 - config registry key
+      ansible.windows.win_regedit:
+        path: "{{ reg_path }}"
+        name: "{{ reg_name }}"
+        data: "{{ reg_data }}"
+      register: __reg_key

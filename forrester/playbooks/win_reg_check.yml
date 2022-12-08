@@ -1,11 +1,45 @@
 ---
 - name: Assert Win registry key entry
-  hosts: "{{ windows_group | default('windows') }}"
+  hosts: windows
   become: false
   gather_facts: false
 
-  vars:
-    reg_key: 
+  # vars:
+  #   reg_name: TcpReceivePacketSize
+  #   reg_path: HKLM:\SYSTEM\CurrentControlSet\Services\DNS\Parameters
+
   tasks:
-    # - name: Assert registry key exists
-    - ansible.builtin.setup:
+    - name: CVE-2020-1350 registry key
+      ansible.windows.win_reg_stat:
+        path: "{{ reg_path }}"
+        name: "{{ reg_name }}"
+      register: __reg_key
+
+- name: Create temp vulnerable inventory
+  hosts: tag_Name_craig_zta_controller
+  gather_facts: true
+
+  vars:
+    controller_login: &controller_login
+      controller_username: "{{ controller_username }}"
+      controller_password: "{{ controller_password }}"
+      controller_host: "{{ controller_hostname }}"
+      validate_certs: "{{ controller_validate_certs }}"
+    # reg_data: 0xFFFF
+
+  tasks:
+    - name: Create inventory - vulnerable hosts
+      awx.awx.inventory:
+        name: "Vulnerable windows hosts"
+        organization: "{{ lab_organization }}"
+        state: present
+        <<: *controller_login
+
+    - name: Add vulnerable hosts to inventory
+      awx.awx.host:
+        name: "{{ item }}"
+        inventory: "Vulnerable windows hosts"
+        state: present
+        <<: *controller_login
+      when: hostvars[item].__reg_key.value == reg_data
+      loop: "{{ query('inventory_hostnames', 'windows') }}"

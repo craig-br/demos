@@ -1,0 +1,5 @@
+---
+reg_name: TcpReceivePacketSize
+reg_path: HKLM:\SYSTEM\CurrentControlSet\Services\DNS\Parameters
+reg_data: 0xFFFF
+reg_type: dword

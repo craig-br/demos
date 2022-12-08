@@ -1,0 +1,13 @@
+<powershell>
+#Requires -Version 3.0
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+$url = "https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1"
+$file = "$env:temp\ConfigureRemotingForAnsible.ps1"
+
+(New-Object -TypeName System.Net.WebClient).DownloadFile($url, $file)
+
+powershell.exe -ExecutionPolicy ByPass -File $file
+
+$NewPassword = ConvertTo-SecureString {{ admin_password }} –AsPlainText –Force
+Set-LocalUser –Name Administrator –Password $NewPassword
+</powershell>
