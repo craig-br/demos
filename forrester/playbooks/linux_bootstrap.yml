@@ -121,18 +121,10 @@
             state: present
             activationkey: "{{ rhsm_activation_key }}"
             org_id: "{{ rhsm_org_id }}"
-            # username: "{{ rhsm_username }}"
-            # password: "{{ rhsm_password }}"
-            # pool_ids:
-            #   - "{{ rhsm_pool_ids }}"
-            # force_register: true
           async: 1000
           poll: 0
           register: __rhsm_async_item
           changed_when: not __rhsm_async_item.changed
-
-        - debug:
-            var: __rhsm_async_item.results
 
         - name: Subscribe to RHSM | Async
           ansible.builtin.async_status:
@@ -147,7 +139,6 @@
       ansible.builtin.package:
         name:
           - nodejs
-          - yara
         state: present
       register: __linux_packages
       when: 
@@ -176,8 +167,8 @@
             redhat_portal_username: "{{ rhsm_username }}"
             redhat_portal_password: "{{ rhsm_password }}"
             insights_tags:
-              env: prod
-              purpose: demo
+              env: dev
+              demo: wave
             autoconfig: false
           ansible.builtin.include_role:
             name: redhatinsights.insights.insights_client

@@ -95,8 +95,8 @@
         groups: windows
         ansible_connection: winrm
         ansible_winrm_transport: basic
-        ansible_user: Administrator
-        ansible_password: "{{ admin_password }}"
+        ansible_user: "{{ lab_win_username }}"
+        ansible_password: "{{ lab_win_password }}"
         ansible_winrm_server_cert_validation: ignore
         ansible_shell_type: cmd
         ansible_port: 5986
