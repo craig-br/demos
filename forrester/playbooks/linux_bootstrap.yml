@@ -4,7 +4,7 @@
   gather_facts: false
 
   tasks:
-    - name: Provision an EC2 Linux instances
+    - name: Provision ec2 Linux instances
       amazon.aws.ec2_instance:
         state: "{{ item.state }}"
         name: "{{ item.name }}"
@@ -84,6 +84,21 @@
     - config-linux
 
   tasks:
+    - name: Install RHEL packages - {{ inventory_hostname }}
+      ansible.builtin.package:
+        name:
+          - nodejs
+          - scap-security-guide
+          - yara
+          - openscap
+          - openscap-scanner
+          - rhc
+          - rhc-worker-playbook
+        state: present
+      register: __linux_packages
+      when: 
+        - ansible_distribution == "RedHat"
+
     - name: Remove cloud CDN repos - {{ inventory_hostname }}
       when:
         - ansible_distribution == "RedHat"
@@ -116,17 +131,20 @@
       when: 
         - ansible_distribution == "RedHat"
       block:
-        - name: Subscribe to RHSM - {{ rhsm_username }}
-          community.general.redhat_subscription:
-            state: present
-            activationkey: "{{ rhsm_activation_key }}"
-            org_id: "{{ rhsm_org_id }}"
+        # - name: Subscribe to RHSM - {{ rhsm_username }}
+        #   community.general.redhat_subscription:
+        #     state: present
+        #     activationkey: "{{ rhsm_activation_key }}"
+        #     org_id: "{{ rhsm_org_id }}"
+        - name: Subscribe with RHC - {{ rhsm_username }}
+          ansible.builtin.command: |
+            /bin/rhc connect --organization "{{ rhsm_org_id }}" --activation-key "{{ rhsm_activation_key }}"
           async: 1000
           poll: 0
           register: __rhsm_async_item
           changed_when: not __rhsm_async_item.changed
 
-        - name: Subscribe to RHSM | Async
+        - name: Subscribe to RHC | Async
           ansible.builtin.async_status:
             jid: "{{ __rhsm_async_item.ansible_job_id }}"
           retries: 60
@@ -135,36 +153,11 @@
           register: __rhsm_async_result_item
           when: __rhsm_async_item.ansible_job_id is defined
 
-    - name: Install nodejs On RHEL 8 - {{ inventory_hostname }}
-      ansible.builtin.package:
-        name:
-          - nodejs
-        state: present
-      register: __linux_packages
-      when: 
-        - ansible_distribution_major_version == "8"
-        - ansible_distribution == "RedHat"
-
-    - name: Install packages On RHEL - {{ inventory_hostname }}
-      ansible.builtin.package:
-        name:
-          - scap-security-guide
-          - yara
-          - openscap
-          - openscap-scanner
-          - rhc
-          - rhc-worker-playbook
-        state: present
-      register: __linux_packages
-      when: 
-        - ansible_distribution == "RedHat"
-
-
-
     - name: Configure Insights client -- {{ inventory_hostname }}
       vars:
         redhat_portal_username: "{{ rhsm_username }}"
         redhat_portal_password: "{{ rhsm_password }}"
+        insights_display_name: "{{ inventory_hostname }}"
         insights_tags:
           env: dev
           demo: wave

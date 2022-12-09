@@ -19,6 +19,7 @@ filters:
   tag:Demo: wave
 hostnames:
   - name: 'private-ip-address'
+  # - name: 'public-ip-address|default(private-ip-address)'
     separator: '_'
     prefix: 'tag:Name'
 groups:
