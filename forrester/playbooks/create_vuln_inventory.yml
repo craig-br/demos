@@ -10,13 +10,18 @@
       controller_password: "{{ controller_password | default(omit) }}"
       controller_host: "{{ controller_hostname | default(hostvars[inventory_hostname].ansible_host) }}"
       validate_certs: "{{ controller_validate_certs | default(false) }}"
+    vuln_inventory_name: Vulnerable hosts
+    vuln_distribution: Microsoft Windows Server 2019 Datacenter
+    vuln_distribution_version: 10.0.17763.0
 
   tasks:
     - name: Create inventory - vulnerable hosts
       awx.awx.inventory:
-        name: "{{ inventory_name | default(lab_vuln_inventory_name) }}"
+        name: "{{ vuln_inventory_name }}"
         organization: "{{ lab_organization }}"
         state: present
         kind: smart
-        host_filter: "{{ inventory_query | default(lab_vuln_inventory_filter) }}"
+        host_filter: |
+          ansible_facts__ansible_distribution="{{ vuln_distribution }}" and
+          ansible_facts__ansible_distribution_version="{{ vuln_distribution_version }}"
         <<: *controller_login
