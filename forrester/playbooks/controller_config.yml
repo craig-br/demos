@@ -1,6 +1,6 @@
 ---
 - name: Controller object configuration
-  hosts: tag_Name_craig_zta_controller
+  hosts: automationcontroller
   gather_facts: false
   connection: "{{ controller_connection | default('local') }}" # For testing on remote controllers
   

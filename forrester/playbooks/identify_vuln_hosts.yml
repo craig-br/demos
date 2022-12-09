@@ -11,7 +11,7 @@
       register: __reg_key
 
 - name: Create temp vulnerable inventory
-  hosts: tag_Name_craig_zta_controller
+  hosts: automationcontroller
   connection: "{{ controller_connection | default('local') }}" # For testing on remote controllers
   gather_facts: false
 

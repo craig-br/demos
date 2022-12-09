@@ -29,7 +29,7 @@
         region: "{{ ec2_region }}"
         filters:
           tag:Demo: wave
-          platform: red hat
+          tag:Os: linux
           instance-state-name: [ "running"]
       register: __ec2_instance_info
       tags:
@@ -71,43 +71,118 @@
       ansible.builtin.add_host: 
         hostname: "{{ item.public_dns_name }}"
         groups: linux
-        # ansible_connection: winrm
-        # ansible_winrm_transport: basic
-        # ansible_user: Administrator
-        # ansible_password: "{{ admin_password }}"
-        # ansible_winrm_server_cert_validation: ignore
-        # ansible_shell_type: cmd
-        # ansible_port: 5986
+        ansible_user: ec2-user
       loop: "{{ __ec2_instance_info.instances }}"
       when:
         - (__ec2_instance_info.instances is defined) and (__ec2_instance_info.instances | length > 0)
 
-# - name: Configure Windows
-#   hosts: windows
-#   gather_facts: true
+- name: Configure Linux instances
+  hosts: linux
+  gather_facts: true
+  become: true
+  tags:
+    - config-linux
 
-#   tasks:
-#     - name: Add windows roles Win2019 - {{ inventory_hostname }}
-#       ansible.windows.win_feature:
-#         name:
-#           - DNS
-#         state: present
-#         include_management_tools: true
-#       register: __win_feature
-#       when: '"Microsoft Windows Server 2019 Datacenter" in hostvars[inventory_hostname].ansible_os_name'
+  tasks:
+    - name: Remove cloud CDN repos - {{ inventory_hostname }}
+      when:
+        - ansible_distribution == "RedHat"
+      block:
+        - name: Remove rhui client packages
+          ansible.builtin.dnf:
+            name: rh-amazon-rhui-client*
+            state: removed
 
-#     - name: Reboot for feature install - {{ inventory_hostname }}
-#       ansible.windows.win_reboot:
-#       when:
-#         - __win_feature.reboot_required is defined
-#         - __win_feature.reboot_required
+        - name: Get current repos
+          ansible.builtin.command:
+            cmd: ls /etc/yum.repos.d/
+          register: repos
+          changed_when: False
 
-#     # KB4569509: Guidance for DNS Server Vulnerability CVE-2020-1350
-#     - name: Add vulnerable Win2019 reg key 
-#       ansible.windows.win_regedit:
-#         state: present
-#         path: "{{ reg_path }}"
-#         name: "{{ reg_name }}"
-#         type: "{{ reg_type }}"
-#         data: "{{ reg_data }}"
-#       when: '"Microsoft Windows Server 2019 Datacenter" in hostvars[inventory_hostname].ansible_os_name'
+        - name: Remove existing rhui repos
+          ansible.builtin.file:
+            path: "/etc/yum.repos.d/{{ item }}"
+            state: absent
+          loop: "{{ repos.stdout_lines }}"
+          when: "'rhui' in item"
+  
+        - name: Manage repos with subscription manager
+          ansible.builtin.lineinfile:
+            path: /etc/rhsm/rhsm.conf
+            regexp: '^manage_repos'
+            line: 'manage_repos = 1'
+
+    - name: Subscribe RHEL instances
+      when: 
+        - ansible_distribution == "RedHat"
+      block:
+        - name: Subscribe to RHSM - {{ rhsm_username }}
+          community.general.redhat_subscription:
+            state: present
+            activationkey: "{{ rhsm_activation_key }}"
+            org_id: "{{ rhsm_org_id }}"
+            # username: "{{ rhsm_username }}"
+            # password: "{{ rhsm_password }}"
+            # pool_ids:
+            #   - "{{ rhsm_pool_ids }}"
+            # force_register: true
+          async: 1000
+          poll: 0
+          register: __rhsm_async_item
+          changed_when: not __rhsm_async_item.changed
+
+        - debug:
+            var: __rhsm_async_item.results
+
+        - name: Subscribe to RHSM | Async
+          ansible.builtin.async_status:
+            jid: "{{ __rhsm_async_item.ansible_job_id }}"
+          retries: 60
+          delay: 1
+          until: __rhsm_async_result_item.finished
+          register: __rhsm_async_result_item
+          when: __rhsm_async_item.ansible_job_id is defined
+
+    - name: Install nodejs On RHEL 8 - {{ inventory_hostname }}
+      ansible.builtin.package:
+        name:
+          - nodejs
+          - yara
+        state: present
+      register: __linux_packages
+      when: 
+        - ansible_distribution_major_version == "8"
+        - ansible_distribution == "RedHat"
+
+    - name: Install packages On RHEL - {{ inventory_hostname }}
+      ansible.builtin.package:
+        name:
+          - scap-security-guide
+          - yara
+          - openscap
+          - openscap-scanner
+          - rhc
+          - rhc-worker-playbook
+        state: present
+      register: __linux_packages
+      when: 
+        - ansible_distribution == "RedHat"
+
+    - name: Configure Insights on ec2 instances
+      when: ansible_os_family == 'RedHat'
+      block:
+        - name: Configure Insights client -- {{ inventory_hostname }}
+          vars:
+            redhat_portal_username: "{{ rhsm_username }}"
+            redhat_portal_password: "{{ rhsm_password }}"
+            insights_tags:
+              env: prod
+              purpose: demo
+            autoconfig: false
+          ansible.builtin.include_role:
+            name: redhatinsights.insights.insights_client
+
+        # - name: Configure Insights compliance -- {{ inventory_hostname }}
+        #   ansible.builtin.include_role:
+        #     name: redhatinsights.insights.compliance
+        #     tasks_from: run

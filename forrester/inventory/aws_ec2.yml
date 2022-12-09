@@ -3,9 +3,9 @@ plugin: amazon.aws.aws_ec2
 cache: true
 regions:
   - us-east-1
-keyed_groups:
-  - prefix: tag
-    key: tags
+# keyed_groups:
+#   - prefix: tag
+#     key: tags
 compose:
   # use a private address where a public one isn't assigned
   # ansible_host: private_ip_address
@@ -16,5 +16,7 @@ filters:
   tag:Demo: wave
 groups:
   windows: platform == 'windows'
-  linux: platform_details == 'Red Hat Enterprise Linux'
+  linux: tags.Os == 'linux'
+  automationcontroller: tags.Name == 'craig-zta-controller'
+  # linux: platform_details == 'Red Hat Enterprise Linux'
 use_extra_vars: true
