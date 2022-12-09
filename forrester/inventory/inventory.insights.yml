@@ -1,7 +1,7 @@
 ---
 plugin: redhatinsights.insights.insights
 get_patches: true
-get_system_advisories: true
+# get_system_advisories: true
 groups:
   patch_bugs: insights_patching.rhba_count > 0
   patch_enhancements: insights_patching.rhea_count > 0
