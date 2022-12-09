@@ -159,21 +159,21 @@
       when: 
         - ansible_distribution == "RedHat"
 
-    - name: Configure Insights on ec2 instances
-      when: ansible_os_family == 'RedHat'
-      block:
-        - name: Configure Insights client -- {{ inventory_hostname }}
-          vars:
-            redhat_portal_username: "{{ rhsm_username }}"
-            redhat_portal_password: "{{ rhsm_password }}"
-            insights_tags:
-              env: dev
-              demo: wave
-            autoconfig: false
-          ansible.builtin.include_role:
-            name: redhatinsights.insights.insights_client
 
-        # - name: Configure Insights compliance -- {{ inventory_hostname }}
-        #   ansible.builtin.include_role:
-        #     name: redhatinsights.insights.compliance
-        #     tasks_from: run
+
+    - name: Configure Insights client -- {{ inventory_hostname }}
+      vars:
+        redhat_portal_username: "{{ rhsm_username }}"
+        redhat_portal_password: "{{ rhsm_password }}"
+        insights_tags:
+          env: dev
+          demo: wave
+        autoconfig: false
+      ansible.builtin.include_role:
+        name: redhatinsights.insights.insights_client
+      when: ansible_os_family == 'RedHat'
+
+      # - name: Configure Insights compliance -- {{ inventory_hostname }}
+      #   ansible.builtin.include_role:
+      #     name: redhatinsights.insights.compliance
+      #     tasks_from: run

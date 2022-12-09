@@ -1,5 +1,5 @@
 ---
-- name: Assert Win registry key entry
+- name: Gather ansible facts
   hosts: all
 
   tasks:
