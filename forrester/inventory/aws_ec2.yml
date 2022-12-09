@@ -17,6 +17,10 @@ filters:
   vpc-id: vpc-0f5609e59ce6fc9b0
   instance-state-name: running
   tag:Demo: wave
+hostnames:
+  - name: 'private-ip-address'
+    separator: '_'
+    prefix: 'tag:Name'
 groups:
   windows: platform == 'windows'
   linux: tags.Os == 'linux'
