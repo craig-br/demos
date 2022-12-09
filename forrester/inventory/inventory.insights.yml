@@ -9,7 +9,7 @@ groups:
 get_tags: true
 selection: none
 filter_tags:
-  - insights-client/purpose=demo
+  - insights-client/demo=wave
 # keyed_groups:
 #   - key: insights_tags['insights-client']
 #     prefix: insights
