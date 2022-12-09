@@ -12,11 +12,15 @@ compose:
   ansible_host: public_ip_address|default(private_ip_address)
 filters:
   # All instances with their state as `running`
+  # vpc-id: vpc-0c39466556590fd4e
+  # Sean VPC
+  vpc-id: vpc-0f5609e59ce6fc9b0
   instance-state-name: running
   tag:Demo: wave
 groups:
   windows: platform == 'windows'
   linux: tags.Os == 'linux'
-  automationcontroller: tags.Name == 'craig-zta-controller'
+  automationcontroller: tags.Name == 'wave-student1-ansible-1'
+  # automationcontroller: tags.Name == 'craig-zta-controller'
   # linux: platform_details == 'Red Hat Enterprise Linux'
 use_extra_vars: true

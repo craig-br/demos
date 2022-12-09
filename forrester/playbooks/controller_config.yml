@@ -5,6 +5,23 @@
   connection: "{{ controller_connection | default('local') }}" # For testing on remote controllers
   
   tasks:
+    # - name: Get ec2 instance info
+    #   amazon.aws.ec2_instance_info:
+    #     region: "{{ ec2_region }}"
+    #     filters:
+    #       tag:Demo: wave
+    #       instance-state-name: [ "running"]
+    #   delegate_to: localhost
+    #   register: __ec2_instance_info
+    #   tags:
+    #     - hostvars
+
+    # - debug:
+    #     # var: __ec2_instance_info
+    #     var: hostvars[inventory_hostname] | to_yaml
+    #   tags:
+    #     - hostvars
+
     - name: Download custom execution environments
       when: (controller_execution_environments is defined) and (controller_execution_environments | length > 0)
       tags:
