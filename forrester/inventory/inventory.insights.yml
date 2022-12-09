@@ -1,5 +1,5 @@
 ---
-plugin: redhat.insights.insights
+plugin: redhatinsights.insights.insights
 get_patches: true
 get_system_advisories: true
 groups:
