@@ -1,0 +1,22 @@
+---
+- name: Create dynamic vulnerable inventory
+  hosts: automationcontroller
+  connection: "{{ controller_connection | default('local') }}" # For testing on remote controllers
+  gather_facts: false
+
+  vars:
+    controller_login: &controller_login
+      controller_username: "{{ controller_username | default(omit) }}"
+      controller_password: "{{ controller_password | default(omit) }}"
+      controller_host: "{{ controller_hostname | default(omit) }}"
+      validate_certs: "{{ controller_validate_certs | default(omit) }}"
+
+  tasks:
+    - name: Create inventory - vulnerable hosts
+      awx.awx.inventory:
+        name: "{{ inventory_name | default(lab_vuln_inventory_name) }}"
+        organization: "{{ lab_organization }}"
+        state: present
+        kind: smart
+        host_filter: "{{ inventory_query | default(lab_vuln_inventory_filter) }}"
+        <<: *controller_login
