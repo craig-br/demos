@@ -153,18 +153,43 @@
           register: __rhsm_async_result_item
           when: __rhsm_async_item.ansible_job_id is defined
 
-    - name: Configure Insights client -- {{ inventory_hostname }}
-      vars:
-        redhat_portal_username: "{{ rhsm_username }}"
-        redhat_portal_password: "{{ rhsm_password }}"
-        insights_display_name: "{{ inventory_hostname }}"
-        insights_tags:
-          env: dev
-          demo: wave
-        autoconfig: false
-      ansible.builtin.include_role:
-        name: redhatinsights.insights.insights_client
-      when: ansible_os_family == 'RedHat'
+    - name: Configure Insights
+      tags:
+        - insights
+      when: 
+        - ansible_os_family == 'RedHat'
+      block:
+        - name: Install and configure Insights client -- {{ inventory_hostname }}
+          vars:
+            redhat_portal_username: "{{ rhsm_username }}"
+            redhat_portal_password: "{{ rhsm_password }}"
+            insights_tags:
+              env: dev
+              demo: wave
+            autoconfig: false
+          ansible.builtin.include_role:
+            name: redhatinsights.insights.insights_client
+
+        - name: Run malware scan initial config
+          ansible.builtin.command: >
+            /bin/insights-client --collector malware-detection
+          register: __malware_scan
+          changed_when: __malware_scan.rc == 0
+
+        - name: Configure Insights malware - full scan
+          ansible.builtin.lineinfile:
+            state: present
+            path: /etc/insights-client/malware-detection-config.yml
+            mode: 0644
+            owner: root
+            search_string: 'test_scan: true'
+            line: 'test_scan: false'
+
+        # - name: Run malware scan
+        #   ansible.builtin.command: >
+        #     /bin/insights-client --collector malware-detection
+        #   register: __full_malware_scan
+        #   changed_when: __full_malware_scan.rc == 0
 
       # - name: Configure Insights compliance -- {{ inventory_hostname }}
       #   ansible.builtin.include_role:

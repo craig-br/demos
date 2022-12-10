@@ -39,10 +39,10 @@
         state: present
         <<: *controller_login
 
-    - debug:
-        var: hostvars | to_yaml
-      tags:
-        - hostvars
+    # - debug:
+    #     var: hostvars | to_yaml
+    #   tags:
+    #     - hostvars
     # - name: Create OS groups
     #   awx.awx.group:
     #     name: "{{ item }}"
