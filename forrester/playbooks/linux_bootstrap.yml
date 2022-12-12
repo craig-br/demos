@@ -18,7 +18,7 @@
         image_id: "{{ item.image_id }}"
         tags: "{{ item.tags }}"
         wait: "{{ item.wait }}"
-        user_data: "{{ item.user_data | default(omit)}}"
+        user_data: "{{ item.user_data | default(omit) }}"
       register: __ec2_results
       loop: "{{ ec2_linux_instances }}"
       tags:
@@ -30,7 +30,7 @@
         filters:
           tag:Demo: wave
           tag:Os: linux
-          instance-state-name: [ "running"]
+          instance-state-name: ["running"]
       register: __ec2_instance_info
       tags:
         - create-instances
@@ -68,7 +68,7 @@
           when: __instances_ssh_async_result_item.ansible_job_id is defined
 
     - name: Add ec2 instances to inventory group - linux
-      ansible.builtin.add_host: 
+      ansible.builtin.add_host:
         hostname: "{{ item.public_dns_name }}"
         groups: linux
         ansible_user: ec2-user
@@ -96,7 +96,7 @@
           - rhc-worker-playbook
         state: present
       register: __linux_packages
-      when: 
+      when:
         - ansible_distribution == "RedHat"
 
     - name: Remove cloud CDN repos - {{ inventory_hostname }}
@@ -112,7 +112,7 @@
           ansible.builtin.command:
             cmd: ls /etc/yum.repos.d/
           register: repos
-          changed_when: False
+          changed_when: false
 
         - name: Remove existing rhui repos
           ansible.builtin.file:
@@ -120,7 +120,7 @@
             state: absent
           loop: "{{ repos.stdout_lines }}"
           when: "'rhui' in item"
-  
+
         - name: Manage repos with subscription manager
           ansible.builtin.lineinfile:
             path: /etc/rhsm/rhsm.conf
@@ -128,7 +128,7 @@
             line: 'manage_repos = 1'
 
     - name: Subscribe RHEL instances
-      when: 
+      when:
         - ansible_distribution == "RedHat"
       block:
         # - name: Subscribe to RHSM - {{ rhsm_username }}
@@ -156,7 +156,7 @@
     - name: Configure Insights
       tags:
         - insights
-      when: 
+      when:
         - ansible_os_family == 'RedHat'
       block:
         - name: Install and configure Insights client -- {{ inventory_hostname }}
@@ -170,20 +170,26 @@
           ansible.builtin.include_role:
             name: redhatinsights.insights.insights_client
 
+        - name: Perform initial Insights upload
+          ansible.builtin.command: >
+            /bin/insights-client
+          register: __insights_scan
+          changed_when: __insights_scan.rc == 0
+
         - name: Run malware scan initial config
           ansible.builtin.command: >
             /bin/insights-client --collector malware-detection
           register: __malware_scan
           changed_when: __malware_scan.rc == 0
 
-        - name: Configure Insights malware - full scan
-          ansible.builtin.lineinfile:
-            state: present
-            path: /etc/insights-client/malware-detection-config.yml
-            mode: 0644
-            owner: root
-            search_string: 'test_scan: true'
-            line: 'test_scan: false'
+        # - name: Configure Insights malware - full scan
+        #   ansible.builtin.lineinfile:
+        #     state: present
+        #     path: /etc/insights-client/malware-detection-config.yml
+        #     mode: 0644
+        #     owner: root
+        #     search_string: 'test_scan: true'
+        #     line: 'test_scan: false'
 
         # - name: Run malware scan
         #   ansible.builtin.command: >

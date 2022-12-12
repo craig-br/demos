@@ -51,7 +51,7 @@
         filters:
           tag:Demo: wave
           platform: windows
-          instance-state-name: [ "running"]
+          instance-state-name: ["running"]
       register: __ec2_instance_info
       tags:
         - create-instances
@@ -90,7 +90,7 @@
           when: __instances_rdp_async_result_item.ansible_job_id is defined
 
     - name: Add ec2 instances to inventory group - windows
-      ansible.builtin.add_host: 
+      ansible.builtin.add_host:
         hostname: "{{ item.public_dns_name }}"
         groups: windows
         ansible_connection: winrm
@@ -125,7 +125,7 @@
         - __win_feature.reboot_required
 
     # KB4569509: Guidance for DNS Server Vulnerability CVE-2020-1350
-    - name: Add vulnerable Win2019 reg key 
+    - name: Add vulnerable Win2019 reg key
       ansible.windows.win_regedit:
         state: present
         path: "{{ reg_path }}"

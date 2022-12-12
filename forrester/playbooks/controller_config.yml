@@ -3,7 +3,7 @@
   hosts: automationcontroller
   gather_facts: false
   connection: "{{ controller_connection | default('local') }}" # For testing on remote controllers
-  
+
   tasks:
     # - name: Get ec2 instance info
     #   amazon.aws.ec2_instance_info:
@@ -35,14 +35,14 @@
           changed_when: '"is already installed, skipping" not in __collection_install.stdout'
 
         - name: Log into registry.redhat.io
-          become_user: "awx"
           containers.podman.podman_login:
             registry: "registry.redhat.io"
             username: "{{ registry_username }}"
             password: "{{ registry_password }}"
-
-        - name: Pull execution environment images
+          become: true
           become_user: "awx"
+
+        - name: Pull execution environment image
           containers.podman.podman_image:
             name: "{{ item.image }}"
             force: "{{ item.force }}"
@@ -51,6 +51,8 @@
           until: __podman_pull_supported is not failed
           retries: 40
           delay: 2
+          become: true
+          become_user: "awx"
 
 - name: Controller object configuration
   hosts: localhost
