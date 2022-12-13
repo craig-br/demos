@@ -27,7 +27,7 @@
     - name: Create inventory - vulnerable hosts
       awx.awx.inventory:
         name: "{{ vuln_inventory_name }}"
-        organization: "{{ lab_organization | default('Default') }}"
+        organization: "{{ lab_organization }}"
         state: present
         variables:
           ansible_user: Administrator
@@ -48,5 +48,6 @@
         host_filter: |
           ansible_facts__ansible_distribution="{{ vuln_distribution }}" and
           ansible_facts__ansible_distribution_version="{{ vuln_distribution_version }}" and
-          groups__name="windows"
+          groups__name="windows" and
+          inventory=7
         <<: *controller_login
