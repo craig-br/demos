@@ -27,7 +27,7 @@
     - name: Create inventory - vulnerable hosts
       awx.awx.inventory:
         name: "{{ vuln_inventory_name }}"
-        organization: "{{ lab_organization }}"
+        organization: "{{ lab_organization | default('Default') }}"
         state: present
         variables:
           ansible_user: Administrator
