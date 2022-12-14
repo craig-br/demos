@@ -48,6 +48,5 @@
         host_filter: |
           ansible_facts__ansible_distribution="{{ vuln_distribution }}" and
           ansible_facts__ansible_distribution_version="{{ vuln_distribution_version }}" and
-          groups__name="windows" and
-          inventory=7
+          groups__name="windows"
         <<: *controller_login
