@@ -10,6 +10,7 @@ compose:
   # use a private address where a public one isn't assigned
   # ansible_host: private_ip_address
   ansible_host: public_ip_address|default(private_ip_address)
+  ansible_user: 'ec2-user'
 filters:
   # All instances with their state as `running`
   # vpc-id: vpc-0c39466556590fd4e
