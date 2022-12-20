@@ -4,7 +4,7 @@
   gather_facts: false
 
   tasks:
-    - name: Provision ec2 Linux instances
+    - name: Provision ec2 Linux instances # no qa syntax[specific]
       amazon.aws.ec2_instance:
         state: "{{ item.state }}"
         name: "{{ item.name }}"
@@ -30,6 +30,7 @@
         filters:
           tag:Demo: wave
           tag:Os: linux
+          tag:Name: "wave-*"
           instance-state-name: ["running"]
       register: __ec2_instance_info
       tags:
@@ -70,14 +71,14 @@
     - name: Add ec2 instances to inventory group - linux
       ansible.builtin.add_host:
         hostname: "{{ item.public_dns_name }}"
-        groups: linux
+        groups: linux_bootstrap
         ansible_user: ec2-user
       loop: "{{ __ec2_instance_info.instances }}"
       when:
         - (__ec2_instance_info.instances is defined) and (__ec2_instance_info.instances | length > 0)
 
 - name: Configure Linux instances
-  hosts: linux
+  hosts: linux_bootstrap
   gather_facts: true
   become: true
   tags:
@@ -136,22 +137,43 @@
         #     state: present
         #     activationkey: "{{ rhsm_activation_key }}"
         #     org_id: "{{ rhsm_org_id }}"
-        - name: Subscribe with RHC - {{ rhsm_username }}
+        - name: Connect with RHC - {{ rhsm_org_id }}
           ansible.builtin.command: |
             /bin/rhc connect --organization "{{ rhsm_org_id }}" --activation-key "{{ rhsm_activation_key }}"
           async: 1000
           poll: 0
-          register: __rhsm_async_item
-          changed_when: not __rhsm_async_item.changed
+          register: __rhc_async_item
+          changed_when: not __rhc_async_item.changed
 
-        - name: Subscribe to RHC | Async
+        - name: Connect with RHC | Async
           ansible.builtin.async_status:
-            jid: "{{ __rhsm_async_item.ansible_job_id }}"
+            jid: "{{ __rhc_async_item.ansible_job_id }}"
           retries: 60
           delay: 1
-          until: __rhsm_async_result_item.finished
-          register: __rhsm_async_result_item
-          when: __rhsm_async_item.ansible_job_id is defined
+          until: __rhc_async_result_item.finished
+          register: __rhc_async_result_item
+          when: __rhc_async_item.ansible_job_id is defined
+
+        # - name: Subscribe to RHSM - {{ rhsm_org_id }}
+        #   community.general.redhat_subscription:
+        #     state: present
+        #     activationkey: "{{ rhsm_activation_key }}"
+        #     pool_ids: "{{ rhsm_pool_ids }}"
+        #     org_id: "{{ rhsm_org_id }}"
+
+        #   async: 1000
+        #   poll: 0
+        #   register: __rhsm_async_item
+        #   changed_when: not __rhsm_async_item.changed
+
+        # - name: Subscribe to RHSM | Async
+        #   ansible.builtin.async_status:
+        #     jid: "{{ __rhsm_async_item.ansible_job_id }}"
+        #   retries: 60
+        #   delay: 1
+        #   until: __rhsm_async_result_item.finished
+        #   register: __rhsm_async_result_item
+        #   when: __rhsm_async_item.ansible_job_id is defined
 
     - name: Configure Insights
       tags:
@@ -161,8 +183,8 @@
       block:
         - name: Install and configure Insights client -- {{ inventory_hostname }}
           vars:
-            redhat_portal_username: "{{ rhsm_username }}"
-            redhat_portal_password: "{{ rhsm_password }}"
+            # redhat_portal_username: "{{ rhsm_username }}"
+            # redhat_portal_password: "{{ rhsm_password }}"
             insights_tags:
               env: dev
               demo: wave

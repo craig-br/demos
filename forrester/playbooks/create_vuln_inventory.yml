@@ -15,15 +15,6 @@
     vuln_distribution_version: 10.0.17763.0
 
   tasks:
-    # - name: Set inventory variables fact
-    #   ansible.builtin.set_fact:
-    #     inventory_vars: "{{ inventory_vars | default([]) + [{lookup('ansible.builtin.file', inventory_dir + '/group_vars/windows.yml')}] }}"
-    #   tags:
-    #     - inv-vars
-    # - debug:
-    #     var: lookup('ansible.builtin.file', inventory_dir + '/group_vars/windows.yml')
-    #   tags:
-    #     - inv-vars
     - name: Create inventory - vulnerable hosts
       awx.awx.inventory:
         name: "{{ vuln_inventory_name }}"
@@ -43,7 +34,6 @@
                     61663062376265326336343064623337346437393561633161636366353563616337653261373535
                     3939326432663139300a653138326337623430613163386434653830656432663131643764303665
                     31666337623835356538633063616465646239303231303266383333666237313861
-        # variables: "{{ lookup('ansible.builtin.file', inventory_dir + '/group_vars/windows.yml') }}"
         kind: smart
         host_filter: |
           ansible_facts__ansible_distribution="{{ vuln_distribution }}" and
