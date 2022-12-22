@@ -1,6 +1,0 @@
----
-ansible_user: ec2-user
-lab_organization: "Default"
-ansible_connection: local
-# controller_hostname: https://ansible.demoredhat.com
-# controller_validate_certs: false
