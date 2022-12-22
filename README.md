@@ -11,4 +11,4 @@ This content is purely examples to help get you started creating your own automa
 ## Demos
 
 - [Ansible security automation - Security response and remediation Zero Trust demo](./zta-windows/README.md).
-- [Ansible security automation - Security response and remediation Zero Trust demo](./vulnerability/README.md).
+- [Ansible security automation - Vulnerability management](./vulnerability/README.md).
