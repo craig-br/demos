@@ -1,0 +1,38 @@
+---
+# Fixed playbook for "Write an Ansible playbook to create 3 AWS ec2 instances" ChatGPT response.
+- name: Create EC2 instances
+  hosts: localhost
+  gather_facts: false
+  vars:
+    region: us-east-1
+    instance_type: t2.micro
+    image:
+      id: ami-0dba2cb6798deb6d8
+    key_name: mykey
+    security_group: mysecuritygroup
+    count: 3
+    vpc_subnet_id: subnet-abcdef12345
+  tasks:
+    - name: Create EC2 instances
+      amazon.aws.ec2_instance:
+        key_name: "{{ key_name }}"
+        security_group: "{{ security_group }}"
+        instance_type: "{{ instance_type }}"
+        image: "{{ image }}"
+        region: "{{ region }}"
+        count: "{{ count }}"
+        wait: true
+        vpc_subnet_id: "{{ vpc_subnet_id }}"
+        network:
+          assign_public_ip: true
+      register: ec2
+    - name: Wait for instances to be in running state
+      ansible.builtin.wait_for:
+        state: present
+        host: "{{ item.public_ip_address }}"
+        port: 22
+      with_items: "{{ ec2.instances }}"
+    - name: Print instance information
+      ansible.builtin.debug:
+        var: item
+      with_items: "{{ ec2.instances }}"
