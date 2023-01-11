@@ -2,7 +2,7 @@
 
 ## Overview
 
-[**Slide deck**](zta_demo_slides.pdf)
+[**Slide deck**](../../assets/slides/zta_demo_slides.pdf)
 
 According to the Cyber Resilient Organization Study 2021, 66% of surveyed leaders recognize that automation, machine learning, AI and orchestration strengthen cyber resiliency.
 
@@ -19,7 +19,7 @@ Feel free to watch the webinar and use the [playbook examples](playbooks) to ins
 
 ### Step 1
 
-![zta-step1](../assets/img/zta-step1.png)
+![zta-step1](../../assets/img/zta-step1.png)
 
 - Suspicious registry key is detected on `Win1` host
 - TrendMicro DeepSecurity generates a log in IBM QRadar SIEM.
@@ -27,14 +27,14 @@ Feel free to watch the webinar and use the [playbook examples](playbooks) to ins
 
 ## Step 2
 
-![zta-step2](../assets/img/zta-step2.png)
+![zta-step2](../../assets/img/zta-step2.png)
 
 - Analyst triggers [`contain_and_isolate.yml`](playbooks/contain_and_isolate.yml) playbook in automation controller using IBM SOAR.
 - Ansible Automation Platform automates removing domain user from corporate shares and disables the compromised user account.
 
 ## Step 3
 
-![zta-step3](../assets/img/zta-step3.png)
+![zta-step3](../../assets/img/zta-step3.png)
 
 - Analyst redirects Check Point NGFW logs into QRadar SIEM using [cp_redirect_logs.yml](playbooks/cp_redirect_logs.yml) in automation controller.
 - Analyst determines the traffic is malicious and remediates by updating the Check Point NGFW firewall policy using [cp_deny_traffic.yml](playbooks/cp_deny_traffic.yml).
