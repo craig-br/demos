@@ -1,5 +1,5 @@
 ---
-# ChatGPT output for "Write an Ansible playbook to create 3 AWS ec2 instances"
+# Original ChatGPT output for "Write an Ansible playbook to create 3 AWS ec2 instances"
 - name: Create EC2 instances
   hosts: localhost
   gather_facts: false
