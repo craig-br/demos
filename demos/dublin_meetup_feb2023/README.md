@@ -4,6 +4,8 @@
 
 [**Slide deck**](../../assets/slides/dublin_meetup_feb2023_slides.pdf)
 
+![ee](../../assets/img/dublin_meetup_feb2023/execution_environments.png)
+
 In the Feb 2023 [Ansible Ireland Meetup](https://www.meetup.com/ansible-ireland/), we discussed automation execution environments and the improved content creation tools.
 
 Execution environments are containerised images containing ansible-core, Ansible content, such as Content Collections, and any additional, needed dependencies. Execution environments (EE) provide a reliable, consistent framework to build, test and deploy Ansible Automation at scale.
