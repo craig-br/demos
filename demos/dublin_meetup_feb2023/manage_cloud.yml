@@ -1,0 +1,20 @@
+---
+# Provision ec2 instances
+- name: Create cloud instances
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Create ec2 instances
+      amazon.aws.ec2_instance:
+        name: 'EC2 Instance name'
+        region: 'EC2 Region'
+        state: running
+        exact_count: 1
+        wait: true
+        instance_type: 'EC2 Instance type'
+        image_id: 'EC2 image ID '
+        vpc_subnet_id: 'VPC Subnet ID'
+        security_group: 'EC2 Security group'
+        key_name: 'EC2 Key name'
