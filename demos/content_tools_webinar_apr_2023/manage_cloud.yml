@@ -20,4 +20,4 @@
 
     - name: Print ec2_instance
       ansible.builtin.debug:
-        var: ec2_instane
+        var: ec2_instance
