@@ -8,7 +8,7 @@
 
 The [Build and deploy using Ansible content developer tools](https://events.redhat.com/profile/form/index.cfm?PKformID=0x758671cd6d&extIdCarryOver=true&sc_cid=7013a0000034gRCAAY#overview) webinar covered the Ansible Automation Platform content creation tools and it's role in developing and executing consistent automation.
 
-Execution environments are containerised images containing ansible-core, Ansible content, such as Content Collections, and any additional, needed dependencies. Execution environments (EE) provide a reliable, consistent framework to build, test and deploy Ansible Automation at scale.
+Execution environments are containerised images containing ansible-core, Ansible content, such as Content Collections, and any additional dependencies. Execution environments (EE) provide a reliable, consistent framework to build, test and deploy Ansible Automation at scale.
 
 The improved Ansible content creation tools, including [ansible-builder](https://ansible-builder.readthedocs.io/en/stable/), [ansible-navigator](https://ansible-navigator.readthedocs.io/en/latest/), and the [Ansible Visual Studio Code extension](https://marketplace.visualstudio.com/items?itemName=redhat.ansible), simplify building and using Ansible execution environments with your automation.
 
@@ -66,6 +66,6 @@ webinar_content_tools_apr2023$ ansible-navigator run manage_cloud.yml
 Use [automation controller](https://www.ansible.com/products/controller) to create the following:
 1. A *Project* pointing to your source code repository. The demo used [https://github.com/craig-br/demos](https://github.com/craig-br/demos).
 2. An execution environment definition for `quay.io/acme_corp/content_tools_demo_ee`.
-3. A *Job Template* using [manage_cloud.yml](manage_cloud.yml), `quay.io/acme_corp/content_tools_demo_ee`, and any additional requirments such as AWS credentials.
+3. A *Job Template* using [manage_cloud.yml](manage_cloud.yml), the `content_tools_demo_ee` execution environment, and any additional requirments such as AWS credentials.
 4. Create a *Workflow* that first performs a *Project* sync and then executes the *Job Template*.
 5. Run the *Workflow* and profit.
