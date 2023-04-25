@@ -1,12 +1,12 @@
-# Ansible Ireland Meetup - Dublin Feb 2023 - Ansible content creation with execution environments
+# EMEA Open Demos April 2023 - Ansible Automatiopn Platform content creation tools webinar
 
 ## Overview
 
-[**Slide deck**](../../assets/slides/dublin_meetup_feb2023_slides.pdf)
+[**Slide deck**](../../assets/slides/content_creation_tools.pdf)
 
-![ee](../../assets/img/dublin_meetup_feb2023/execution_environments.png)
+![aap_tools](../../assets/img/webinar_content_tools_apr2023/aap_tools.png)
 
-In the Feb 2023 [Ansible Ireland Meetup](https://www.meetup.com/ansible-ireland/), we discussed automation execution environments and the improved content creation tools.
+The [Build and deploy using Ansible content developer tools](https://events.redhat.com/profile/form/index.cfm?PKformID=0x758671cd6d&extIdCarryOver=true&sc_cid=7013a0000034gRCAAY#overview) webinar covered the Ansible Automation Platform content creation tools and it's role in developing and executing consistent automation.
 
 Execution environments are containerised images containing ansible-core, Ansible content, such as Content Collections, and any additional, needed dependencies. Execution environments (EE) provide a reliable, consistent framework to build, test and deploy Ansible Automation at scale.
 
@@ -17,33 +17,33 @@ The improved Ansible content creation tools, including [ansible-builder](https:/
 
 ## Demonstration
 
-### Step 1 - ansible-builder
+### Step 1 - `ansible-builder`
 
-![ansible-builder](../../assets/img/dublin_meetup_feb2023/ansible_builder.png)
+![ansible-builder](../../assets/img/webinar_content_tools_apr2023/ansible_builder.png)
 
 >ℹ️ **Note**<p>
-> Run all the commands from the `./dublin_meetup_feb2023/execution_environment` directory.
+> Run all the commands from the `./webinar_content_tools_apr2023/execution_environment` directory.
 
 The [execution-environment.yml](./execution_environment/execution-environment.yml) and [requirements.yml](execution_environment/requirements.yml) files contain the configuration and required Ansible content collections needed to run the demo automation.
 
-1. Use [ansible-builder](https://ansible-builder.readthedocs.io/en/stable/) to create the `dublin_meetup:latest` execution environment (EE).
+1. Use [ansible-builder](https://ansible-builder.readthedocs.io/en/stable/) to create the `content_tools_demo_ee:latest` execution environment (EE).
 
 ```bash
-dublin_meetup_feb2023/execution_environment$ ansible-builder build --tag quay.io/acme_corp/dublin_meetup:latest -v 3
+webinar_content_tools_apr2023/execution_environment$ ansible-builder build --tag quay.io/acme_corp/content_tools_demo_ee -v 3
 ```
 
-2. Push the `dublin_meetup:latest` EE to the [quay.io](https://quay.io/) image repository.
+2. Push the `content_tools_demo_ee:latest` EE to the [quay.io](https://quay.io/) image repository.
 
 ```bash
-dublin_meetup_feb2023/execution_environment$ podman push quay.io/acme_corp/dublin_meetup:latest
+webinar_content_tools_apr2023/execution_environment$ podman push quay.io/acme_corp/content_tools_demo_ee
 ```
 
-## Step 2 - ansible-navigator
+## Step 2 - `ansible-navigator`
 
-![ansible-navigator](../../assets/img/dublin_meetup_feb2023/ansible_navigator.png)
+![ansible-navigator](../../assets/img/webinar_content_tools_apr2023/ansible_navigator.png)
 
 >ℹ️ **Note**<p>
-> Run all the commands from the `./dublin_meetup_feb2023` directory.   
+> Run all the commands from the `./webinar_content_tools_apr2023` directory.
 > Modify the [manage_cloud.yml](manage_cloud.yml) playbook parameters to match your environment.
 
 The [ansible-navigator.yml](ansible-navigator.yml) file contains the `ansible-navigator` demo configuration. These options can also be passed via the command line.
@@ -51,5 +51,21 @@ The [ansible-navigator.yml](ansible-navigator.yml) file contains the `ansible-na
 1. Use [ansible-navigator](https://ansible-navigator.readthedocs.io/en/latest/) to run the [manage_cloud.yml](manage_cloud.yml) playbook.
 
 ```bash
-dublin_meetup_feb2023$ ansible-navigator run provision_cloud.yml
+webinar_content_tools_apr2023$ ansible-navigator run manage_cloud.yml
 ```
+
+## Step 3 - Ansible and VS Code
+
+1. Push the [manage_cloud.yml](manage_cloud.yml) to your source code repository.
+![aap_tools](../../assets/img/webinar_content_tools_apr2023/vscode.png)
+
+## Step 4 - Automation controller
+
+![controller](../../assets/img/webinar_content_tools_apr2023/controller.png)
+
+Use [automation controller](https://www.ansible.com/products/controller) to create the following:
+1. A *Project* pointing to your source code repository. The demo used [https://github.com/craig-br/demos](https://github.com/craig-br/demos).
+2. An execution environment definition for `quay.io/acme_corp/content_tools_demo_ee`.
+3. A *Job Template* using [manage_cloud.yml](manage_cloud.yml), `quay.io/acme_corp/content_tools_demo_ee`, and any additional requirments such as AWS credentials.
+4. Create a *Workflow* that first performs a *Project* sync and then executes the *Job Template*.
+5. Run the *Workflow* and profit.
