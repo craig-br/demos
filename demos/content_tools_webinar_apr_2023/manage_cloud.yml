@@ -17,3 +17,7 @@
         image_id: ami-016eb5d644c333ccb
         vpc_subnet_id: subnet-0332628f89a6eb487
       register: ec2_instance
+
+    - name: Print ec2_inatance
+      ansible.builtin.debug:
+        var: ec2_instance
