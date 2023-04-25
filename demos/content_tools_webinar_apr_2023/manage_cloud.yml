@@ -26,6 +26,6 @@
         vpc_subnet_id: "{{ ec2_instance.vpc_subnet_id }}"
       register: ec2_instance
 
-    - name: Print ec2_instance var
+    - name: Print the ec2_instance var
       ansible.builtin.debug:
         var: ec2_instance
