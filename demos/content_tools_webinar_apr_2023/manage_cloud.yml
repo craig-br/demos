@@ -1,0 +1,23 @@
+---
+# Provision EC2 instances
+- name: Create cloud instances
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Create ec2 instances
+      amazon.aws.ec2_instance:
+        name: "{{ name }}"
+        region: "{{ region }}"
+        instance_type: "{{ instance_type }}"
+        state: present
+        wait: true
+        key_name: "{{ key_name }}"
+        image_id: "{{ image_id }}"
+        vpc_subnet_id: "{{ vpc_subnet_id }}"
+      register: ec2_instance
+
+    - name: Print ec2_instance
+      ansible.builtin.debug:
+        var: ec2_instance
