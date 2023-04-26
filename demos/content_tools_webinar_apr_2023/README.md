@@ -1,4 +1,4 @@
-# EMEA Open Demos April 2023 - Ansible Automatiopn Platform content creation tools webinar
+# EMEA Open Demos April 2023 - Ansible Automation Platform content creation tools webinar
 
 ## Overview
 
