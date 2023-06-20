@@ -1,0 +1,61 @@
+---
+- name: Azure Hybrid Cloud Connectivity
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    vm_config:
+      vm_size: Standard_DS2_v2
+      name: ansibull-01
+      network_interfaces:
+        - name: data-lake831
+      image: ansibull-rhel-image
+      tags:
+        project: hybrid-connectivity
+
+  tasks:
+    - name: Create VM with SSH public key using vm_config var
+      azure.azcollection.azure_rm_virtualmachine:
+        resource_group: "{{ resource_group }}"
+        name: "{{ vm_config.name }}"
+        admin_username: ano-user
+        ssh_password_enabled: "{{ ssh_password_enabled }}"
+        ssh_public_keys:
+          - path: /home/ano-user/.ssh/authorized_keys
+            key_data: "{{ key_data }}"
+        vm_size: "{{ vm_config.vm_size }}"
+        image: "{{ vm_config.image }}"
+        network_interfaces: "{{ vm_config.network_interfaces }}"
+        tags: "{{ vm_config.tags }}"
+      register: vm_output
+
+    - name: Refresh inventory
+      ansible.builtin.meta: refresh_inventory
+
+- name: Configure Hybrid cloud instance
+  hosts: rhel
+  become: true
+
+  tasks:
+    - name: Wait for connection
+      ansible.builtin.wait_for_connection:
+        delay: 30
+        timeout: 300
+
+    - name: Install libreswan package
+      ansible.builtin.package:
+        name: libreswan
+        state: present
+
+    - name: Copy files/ipsec_files/ to /etc/ipsec.d/
+      ansible.builtin.copy:
+        src: ./files/ipsec_files/
+        dest: /etc/ipsec.d/
+        mode: '644'
+
+    - name: Start and enable ipsec service
+      ansible.builtin.service:
+        name: ipsec
+        state: started
+        enabled: true

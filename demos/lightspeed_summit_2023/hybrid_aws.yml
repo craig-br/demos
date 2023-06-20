@@ -1,0 +1,23 @@
+---
+- name: AWS Hybrid Cloud Connectivity
+  hosts: localhost
+  gather_facts: false
+
+  module_defaults:
+    community.aws.ec2_vpc_vpn:
+      region: us-east-1
+      tags:
+        Project: hybrid-connectivity
+
+  vars:
+    vpc_vpn:
+      vpn_gateway_id: vgw-0ed6d96c66dccea0b
+      static_only: true
+
+  tasks:
+    - name: Create a new VPC VPN connection using vpc_vpn var
+      community.aws.ec2_vpc_vpn:
+        state: present
+        static_only: "{{ vpc_vpn.static_only }}"
+        vpn_gateway_id: "{{ vpc_vpn.vpn_gateway_id }}"
+      register: vpn
