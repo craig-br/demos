@@ -16,3 +16,6 @@ This content is purely examples to help get you started creating your own automa
 - [EMEA Open Demos - Ansible Automation Platform Content tools](./demos/content_tools_webinar_apr_2023/README.md)
 
 ## Blogs
+
+- [Ansible and ChatGPT: Putting it to the test](./blogs/chatgpt-blog/README.md)
+- [Welcome to the Ansible Lightspeed with IBM Watson Code Assistant Technical Preview](./blogs/lightspeed_tech_preview_jun2023/README.md)
