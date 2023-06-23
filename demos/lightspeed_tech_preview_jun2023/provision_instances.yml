@@ -1,0 +1,72 @@
+- name: Create AWS cloud instances
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    cloud_instance:
+      name: monitoring-01
+      image_id: ami-016eb5d644c333ccb # RHEL 9 in AWS use-east-1 region
+      region: us-east-1
+      security_group: "Your security group"
+      key_name: "Your key name"
+      tags:
+        Function: lightspeed-tp-recording
+      vpc_subnet_id: "Your VPC subnet ID"
+      instance_type: t3.micro
+      wait: true
+
+  tasks:
+    - name: Provision a cloud instance using cloud_instance var
+      amazon.aws.ec2_instance:
+        name: "{{ cloud_instance.name }}"
+        key_name: "{{ cloud_instance.key_name }}"
+        vpc_subnet_id: "{{ cloud_instance.vpc_subnet_id }}"
+        instance_type: "{{ cloud_instance.instance_type }}"
+        security_group: "{{ cloud_instance.security_group }}"
+        image_id: "{{ cloud_instance.image_id }}"
+        wait: "{{ cloud_instance.wait }}"
+        region: "{{ cloud_instance.region }}"
+        tags: "{{ cloud_instance.tags }}"
+      register: ec2
+
+
+    - name: Refresh inventory
+      ansible.builtin.meta: refresh_inventory
+
+- name: Configure RHEL instances
+  hosts: monitoring
+  become: true
+  gather_facts: false
+
+  vars:
+    rhel_user:
+      password: "{{ vault_cloud_user_password | password_hash('sha512') }}"
+      create_home: true
+
+  tasks:
+    - name: Wait for connection with 120 second timeout
+      ansible.builtin.wait_for_connection:
+        timeout: 120
+
+    - name: Install firewalld and python3-firewall
+      ansible.builtin.package:
+        name:
+          - firewalld
+          - python3-firewall
+        state: present
+
+    - name: Start and enable firewalld
+      ansible.builtin.service:
+        name: firewalld
+        state: started
+        enabled: true
+
+
+    - name: Add a Linux user called rhel using rhel_user var
+      ansible.builtin.user:
+        name: rhel
+        password: "{{ rhel_user.password }}"
+        create_home: "{{ rhel_user.create_home }}"
+        groups: wheel
+
