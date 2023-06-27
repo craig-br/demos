@@ -16,3 +16,5 @@ This content is purely examples to help get you started creating your own automa
 - [EMEA Open Demos - Ansible Automation Platform Content tools](./demos/content_tools_webinar_apr_2023/README.md)
 
 ## Blogs
+
+- [Ansible and ChatGPT: Putting it to the test](./blogs/chatgpt-blog/README.md)
