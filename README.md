@@ -18,3 +18,4 @@ This content is purely examples to help get you started creating your own automa
 ## Blogs
 
 - [Ansible and ChatGPT: Putting it to the test](./blogs/chatgpt-blog/README.md)
+- [Welcome to the Ansible Lightspeed with IBM Watson Code Assistant Technical Preview](./blogs/lightspeed_tech_preview_jun2023/README.md)
