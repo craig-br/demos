@@ -160,4 +160,3 @@
         var: ec2_instance_info.instances[0].public_dns_name
 
 #  Navigate to http://<ec2_instances.instances[0].public_dns_name>/wordpress/readme.html
-s
