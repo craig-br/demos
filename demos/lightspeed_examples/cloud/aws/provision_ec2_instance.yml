@@ -9,10 +9,10 @@
       name: lightspeed-instance-01
       tags:
         function: aws-cloud-ops
-      key_name: craig-aws-dev
-      image_id: ami-016eb5d644c333ccb
-      vpc_subnet_id: subnet-0332628f89a6eb487
-      security_group: sg-01987c47fb4cdf887
+      key_name: 'Your AWS keypair name'
+      image_id: ami-016eb5d644c333ccb # RHEL 9 us-east-1
+      vpc_subnet_id: 'Your VPC subnet ID'
+      security_group: 'Your security group'
 
   module_defaults:
     group/aws:
