@@ -22,4 +22,4 @@
 
     # - name: Create vpc_subnet_id var
 
-    # - name: Provision t3.micro instance using ec2_instance var
+    # - name: Provision t3.micro instance
