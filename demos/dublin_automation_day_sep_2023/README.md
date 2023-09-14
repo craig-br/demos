@@ -1,43 +1,20 @@
-# Provision an AWS EC2 instance using Ansible Lightspeed
+# Dublin Automation Day September 2023
 
-## Configure and activate Ansible Lightspeed Technical Preview
+## Event Overview
 
-Install the VS Code extension and activate Ansible Lightspeed using resources in the [getting started guide](../../assets/img/dublin_automation_day_sep_2023/).
+[**Session slide deck**](../../assets/slides/dublin_automation_day_sep_2023.pdf)
 
-### ❗️ Test suggestions using the corresponding `solution_*.yml` Playbook
+The Ansible Automation Day Dublin, held on 14 September 2023, covered new, exciting features available in Ansible Automation Platform, customer-focussed discussions, and our strategy moving forward.
 
-The Ansible Lightspeed model continues to improve with each release and generated suggestions may differ from the examples provided.  
-Tested Ansible content starts with the `solution_*.yml` prefix. For example, `solution_provision_ec2_instance.yml` Please use this to compare your generated suggestions to the tested Ansible content.
+The event included a discussion and demonstration of the technical preview version of [Ansible Lightspeed with watsonx Code Assiatant](https://www.redhat.com/en/engage/ansible-lightspeed).
 
-## Overview
+## Demonstration overview
 
-This demo provisions an AWS EC2 instance using pre-existing variables.
+In the demonstration, we used Ansible Lightspeed to generate Ansible tasks to provision an AWS EC2 instance, and used an automation controller workflow to run the generated tasks.
 
-![](../../../assets/img/lightspeed_provision_aws_instance.gif)
+![](../../assets/img/dublin_automation_day_sep_2023/lightspeed_provision_aws_instance.gif)
 
-## Demo preparation
-
-1. Configure your AWS credential environment variables as outlined in the [Ansible AWS guide](https://docs.ansible.com/ansible/latest/collections/amazon/aws/docsite/guide_aws.html#authentication).
-2. Run the [./prepare_ec2_environment.yml](./prepare_ec2_environment.yml) Playbook to create the required AWS demo resources before running the `demo_provision_aws_instance.yml` Playbook.
-
-### Accessing the instance
-
-1. If you're running this outside of the [Ansible Interactive Labs (Instruqt)](https://www.redhat.com/en/interactive-labs/ansible) environment, the `./prepare_ec2_environment.yml` creates a temporary SSH private .pem key file in the `./playbooks/cloud/aws/files` folder to access the instance.
-2. An example inventory is located the [inventory folder](./inventory/).
-
-## Running the demo
-
-### Ansible demo content
-
-#### Initial Ansible Playbook
-
-[./playbooks/cloud/aws/demo_provision_ec2_instance.yml](./demo_provision_ec2_instance.yml)
-
-#### Tested Ansible Playbook
-
-[./playbooks/cloud/aws/solution_provision_ec2_instance.yml](./solution_provision_ec2_instance.yml)
-
-Run the steps below in the [./playbooks/cloud/aws/demo_provision_aws_instance.yml](./demo_provision_ec2_instance.yml) example Ansible Playbook.
+## Ansible Lightspeed Demonstration steps
 
 ### Step 1
 
@@ -80,5 +57,10 @@ Run the steps below in the [./playbooks/cloud/aws/demo_provision_aws_instance.ym
 #### Generate a new, updated  task with  `- name: Provision t3.micro instance using ec2_instance var`
 
 - Ansible Lightspeed used the updated natural language prompt and referenced the `ec2_instance` variable in the suggestion.
+
+
+### Automation controller workflow
+
+![](../../assets/img/dublin_automation_day_sep_2023/controller_workflow.gif)
 
 ---
