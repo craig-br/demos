@@ -1,4 +1,4 @@
-# Ansible Ireland Meetup - Dublin September 2023 - Event-Driven Ansible SwingSight Demo
+# Ansible Ireland Meetup Sep 2023 - Event-Driven Ansible SwingSight Demo
 
 ## Overview
 
