@@ -14,7 +14,8 @@ This content is purely examples to help get you started creating your own automa
 - [Ansible security automation - Vulnerability management](./demos/vulnerability/README.md).
 - [Ansible Ireland Meetup - Feb 2023](./demos/dublin_meetup_feb2023/README.md)
 - [EMEA Open Demos - Ansible Automation Platform Content tools](./demos/content_tools_webinar_apr_2023/README.md)
-- [Dublin Automation Day - September 2023](./demos/dublin_automation_day_sep_2023/README.md)
+- [Dublin Automation Everywhere Day - September 2023](./demos/dublin_automation_day_sep_2023/README.md)
+- [Ansible Ireland Meetup - September 2023](./demos/dublin_automation_day_sep_2023/README.md)
 
 ## Blogs
 
